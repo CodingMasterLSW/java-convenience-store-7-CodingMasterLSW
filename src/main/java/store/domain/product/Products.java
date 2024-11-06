@@ -4,7 +4,7 @@ import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import store.domain.promotion.Promotion;
-import store.utils.PromotionLoader;
+import store.utils.FileLoader;
 
 public class Products {
 
@@ -15,7 +15,7 @@ public class Products {
     }
 
     public static Products create(Map<String, Promotion> promotions) throws IOException {
-        return new Products(PromotionLoader.loadProduct(promotions));
+        return new Products(FileLoader.loadProduct(promotions));
     }
     public List<Product> getProducts() {
         return products;

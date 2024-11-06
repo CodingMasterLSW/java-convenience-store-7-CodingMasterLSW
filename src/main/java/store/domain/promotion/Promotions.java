@@ -3,7 +3,7 @@ package store.domain.promotion;
 import java.io.IOException;
 import java.util.Collections;
 import java.util.Map;
-import store.utils.PromotionLoader;
+import store.utils.FileLoader;
 
 public class Promotions {
 
@@ -14,7 +14,7 @@ public class Promotions {
     }
 
     public static Promotions create() throws IOException {
-        return new Promotions(PromotionLoader.loadPromotion());
+        return new Promotions(FileLoader.loadPromotion());
     }
 
     public Map<String, Promotion> getPromotions() {
