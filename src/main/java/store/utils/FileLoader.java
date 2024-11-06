@@ -19,54 +19,63 @@ public class FileLoader {
     private static final String PRODUCTS_PATH = "src/main/resources/products.md";
     private static final String PROMOTION_PATH = "src/main/resources/promotions.md";
 
-    public static Map<String, Promotion> loadPromotion() throws IOException {
+    public static Map<String, Promotion> loadPromotion() {
         Map<String, Promotion> promotions = new HashMap<>();
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(PROMOTION_PATH));
+            String line;
 
-        BufferedReader br = new BufferedReader(new FileReader(PROMOTION_PATH));
-        String line;
+            br.readLine();
 
-        br.readLine();
+            while ((line = br.readLine()) != null) {
+                List<String> split = List.of(line.split(","));
+                String name = split.get(0);
+                int buy = Integer.parseInt(split.get(1));
+                int get = Integer.parseInt(split.get(2));
+                LocalDate startDate = LocalDate.parse(split.get(3));
+                LocalDate endDate = LocalDate.parse(split.get(4));
 
-        while ((line = br.readLine()) != null) {
-            List<String> split = List.of(line.split(","));
-            String name = split.get(0);
-            int buy = Integer.parseInt(split.get(1));
-            int get = Integer.parseInt(split.get(2));
-            LocalDate startDate = LocalDate.parse(split.get(3));
-            LocalDate endDate = LocalDate.parse(split.get(4));
-
-            Period promotionPeriod = Period.of(startDate, endDate);
-            Promotion promotion = Promotion.of(name, buy, get, promotionPeriod);
-            promotions.put(name, promotion);
+                Period promotionPeriod = Period.of(startDate, endDate);
+                Promotion promotion = Promotion.of(name, buy, get, promotionPeriod);
+                promotions.put(name, promotion);
+            }
+        } catch (IOException e) {
+            throw new IllegalArgumentException();
         }
         return promotions;
     }
 
-    public static List<Product> loadProduct(Map<String, Promotion> promotions) throws IOException {
+    public static List<Product> loadProduct(Map<String, Promotion> promotions) {
         List<Product> products = new ArrayList<>();
 
-        BufferedReader br = new BufferedReader(new FileReader(PRODUCTS_PATH));
-        String line;
+        try {
+            BufferedReader br = new BufferedReader(new FileReader(PRODUCTS_PATH));
 
-        br.readLine();
+            String line;
 
-        while ((line = br.readLine()) != null) {
-            List<String> split = List.of(line.split(","));
-            String name = split.get(0);
-            int price = Integer.parseInt(split.get(1));
-            int quantity = Integer.parseInt(split.get(2));
-            String promotionName = split.get(3);
+            br.readLine();
 
-            if (promotionName == null || promotionName.equals("null")) {
-                Product product = NormalProduct.of(name, price, quantity);
+            while ((line = br.readLine()) != null) {
+                List<String> split = List.of(line.split(","));
+                String name = split.get(0);
+                int price = Integer.parseInt(split.get(1));
+                int quantity = Integer.parseInt(split.get(2));
+                String promotionName = split.get(3);
+
+                if (promotionName == null || promotionName.equals("null")) {
+                    Product product = NormalProduct.of(name, price, quantity);
+                    products.add(product);
+                    continue;
+                }
+
+                Promotion promotion = promotions.get(promotionName);
+                Product product = PromotionProduct.of(name, price, quantity, promotion);
                 products.add(product);
-                continue;
             }
-
-            Promotion promotion = promotions.get(promotionName);
-            Product product = PromotionProduct.of(name, price, quantity, promotion);
-            products.add(product);
+        } catch (IOException e) {
+            throw new IllegalArgumentException();
         }
+
         return products;
 
     }

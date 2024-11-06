@@ -1,6 +1,5 @@
 package store.domain.product;
 
-import java.io.IOException;
 import java.util.List;
 import java.util.Map;
 import store.domain.promotion.Promotion;
@@ -14,7 +13,7 @@ public class Products {
         this.products = products;
     }
 
-    public static Products create(Map<String, Promotion> promotions) throws IOException {
+    public static Products create(Map<String, Promotion> promotions) {
         return new Products(FileLoader.loadProduct(promotions));
     }
     public List<Product> getProducts() {

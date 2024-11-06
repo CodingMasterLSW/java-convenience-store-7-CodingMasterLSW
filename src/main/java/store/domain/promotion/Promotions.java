@@ -13,7 +13,7 @@ public class Promotions {
         this.promotions = promotions;
     }
 
-    public static Promotions create() throws IOException {
+    public static Promotions create() {
         return new Promotions(FileLoader.loadPromotion());
     }
 
