@@ -5,8 +5,8 @@
 ---
 
 ### 파일 읽기
-- [ ] 주어진 resources 파일을 읽어들여 객체로 생성한다.
-  - [ ] products.md 파일을 읽어 Product 객체로 생성한다.
+- [x] 주어진 resources 파일을 읽어들여 객체로 생성한다.
+  - [x] products.md 파일을 읽어 Product 객체로 생성한다.
   - [x] promotions.md 파일을 읽어 Promotion 객체로 생성한다.
 
 ### 입력

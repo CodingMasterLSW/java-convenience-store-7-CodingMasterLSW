@@ -1,19 +1,19 @@
-package store.domain;
+package store.domain.promotion;
 
 import java.time.LocalDate;
 
-public class PromotionPeriod {
+public class Period {
 
     private LocalDate startDate;
     private LocalDate endDate;
 
-    private PromotionPeriod(LocalDate startDate, LocalDate endDate) {
+    private Period(LocalDate startDate, LocalDate endDate) {
         this.startDate = startDate;
         this.endDate = endDate;
     }
 
-    public static PromotionPeriod of(LocalDate startDate, LocalDate endDate) {
-        return new PromotionPeriod(startDate, endDate);
+    public static Period of(LocalDate startDate, LocalDate endDate) {
+        return new Period(startDate, endDate);
     }
 
     public LocalDate getStartDate() {

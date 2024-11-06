@@ -1,20 +1,20 @@
-package store.domain;
+package store.domain.promotion;
 
 public class Promotion {
 
     private String name;
     private int buy;
     private int get;
-    private PromotionPeriod promotionPeriod;
+    private Period period;
 
-    private Promotion(String name, int buy, int get, PromotionPeriod promotionPeriod) {
+    private Promotion(String name, int buy, int get, Period period) {
         this.name = name;
         this.buy = buy;
         this.get = get;
-        this.promotionPeriod = promotionPeriod;
+        this.period = period;
     }
 
-    public static Promotion of(String name, int buy, int get, PromotionPeriod promotionPeriod) {
+    public static Promotion of(String name, int buy, int get, Period promotionPeriod) {
         return new Promotion(name, buy, get, promotionPeriod);
     }
 
@@ -30,7 +30,7 @@ public class Promotion {
         return get;
     }
 
-    public PromotionPeriod getPromotionPeriod() {
-        return promotionPeriod;
+    public Period getPeriod() {
+        return period;
     }
 }
