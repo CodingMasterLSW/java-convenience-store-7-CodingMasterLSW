@@ -16,6 +16,10 @@ public class Period {
         return new Period(startDate, endDate);
     }
 
+    public boolean isPromotionDate(LocalDate localDate) {
+        return !localDate.isAfter(endDate) && !localDate.isBefore(startDate);
+    }
+
     public LocalDate getStartDate() {
         return startDate;
     }

@@ -1,5 +1,7 @@
 package store.domain.promotion;
 
+import java.time.LocalDate;
+
 public class Promotion {
 
     private String name;
@@ -16,6 +18,10 @@ public class Promotion {
 
     public static Promotion of(String name, int buy, int get, Period promotionPeriod) {
         return new Promotion(name, buy, get, promotionPeriod);
+    }
+
+    public boolean isDate(LocalDate localDate) {
+        return period.isPromotionDate(localDate);
     }
 
     public String getName() {
