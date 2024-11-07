@@ -22,4 +22,8 @@ public abstract class Product {
         return price;
     }
 
+    public boolean hasName(String name) {
+        return this.name.equals(name);
+    }
+
 }

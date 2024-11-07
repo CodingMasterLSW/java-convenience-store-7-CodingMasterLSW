@@ -1,27 +1,26 @@
-package store.domain.dto;
+package store.domain;
 
 import java.util.Objects;
 
-public class ParseItemDto {
+public class PurchaseItem {
 
-    private String name;
+    private final String name;
     private int quantity;
 
-    private ParseItemDto(String name, int quantity) {
+    private PurchaseItem(String name, int quantity) {
+        validateQuantity(quantity);
         this.name = name;
         this.quantity = quantity;
     }
 
-    public static ParseItemDto of(String name, int quantity) {
-        return new ParseItemDto(name, quantity);
+    public static PurchaseItem of(String name, int quantity) {
+        return new PurchaseItem(name, quantity);
     }
 
-    public String getName() {
-        return name;
-    }
-
-    public int getQuantity() {
-        return quantity;
+    public void validateQuantity(int quantity) {
+        if (quantity < 0) {
+            throw new IllegalArgumentException("[ERROR] 구매수량은 1 이상이어야 합니다.");
+        }
     }
 
     @Override
@@ -32,7 +31,7 @@ public class ParseItemDto {
         if (object == null || getClass() != object.getClass()) {
             return false;
         }
-        ParseItemDto that = (ParseItemDto) object;
+        PurchaseItem that = (PurchaseItem) object;
         return quantity == that.quantity && Objects.equals(name, that.name);
     }
 
