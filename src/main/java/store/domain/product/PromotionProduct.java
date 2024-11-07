@@ -4,15 +4,17 @@ import store.domain.promotion.Promotion;
 
 public class PromotionProduct extends Product {
 
+    private int stock;
     private Promotion promotion;
 
-    private PromotionProduct(String name, int price, int quantity, Promotion promotion) {
-        super(name, price, quantity);
+    private PromotionProduct(String name, int price, int stock, Promotion promotion) {
+        super(name, price);
+        this.stock = stock;
         this.promotion = promotion;
     }
 
-    public static PromotionProduct of(String name, int price, int quantity, Promotion promotion) {
-        return new PromotionProduct(name, price, quantity, promotion);
+    public static PromotionProduct of(String name, int price, int stock, Promotion promotion) {
+        return new PromotionProduct(name, price, stock, promotion);
     }
 
     @Override
@@ -20,7 +22,9 @@ public class PromotionProduct extends Product {
         return true;
     }
 
-    public Promotion getPromotion() {
-        return promotion;
+    @Override
+    public int getStock() {
+        return this.stock;
     }
+
 }
