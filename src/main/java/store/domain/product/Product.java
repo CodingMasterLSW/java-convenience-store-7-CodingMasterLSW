@@ -1,5 +1,6 @@
 package store.domain.product;
 
+import java.time.LocalDate;
 import store.domain.promotion.Promotion;
 
 public class Product {
@@ -28,6 +29,11 @@ public class Product {
         return new Product(name, price, 0, promotionStock, promotion);
     }
 
+    public static Product of(String name, int price, int normalStock, int promotionStock,
+            Promotion promotion) {
+        return new Product(name, price, normalStock, promotionStock, promotion);
+    }
+
     public void addNormalStock(int stock) {
         this.normalStock += stock;
     }
@@ -35,6 +41,24 @@ public class Product {
     public void addPromotionStock(int stock, Promotion promotion) {
         this.promotionStock += stock;
         this.promotion = promotion;
+    }
+
+    public void buy(int quantity, LocalDate localDate) {
+        if (promotion.isDate(localDate)) {
+            handlePromotionStockShortage(quantity);
+            return;
+        }
+        normalStock -= quantity;
+    }
+
+    private void handlePromotionStockShortage(int quantity) {
+        if (promotionStock < quantity) {
+            int lackQuantity = quantity - promotionStock;
+            promotionStock = 0;
+            normalStock -= lackQuantity;
+            return;
+        }
+        promotionStock -= quantity;
     }
 
     public String getName() {
