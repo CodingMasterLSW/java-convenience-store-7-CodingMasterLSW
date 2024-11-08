@@ -1,5 +1,7 @@
 package store.domain;
 
+import static store.exception.ErrorMessage.NOT_EXIST_PRODUCT;
+
 import java.time.LocalDate;
 import java.util.Collections;
 import java.util.List;
@@ -27,7 +29,7 @@ public class Purchase {
         for (PurchaseItem item : items) {
             List<Product> matchedProducts = products.findProductByName(item.getName());
             if (matchedProducts.isEmpty()) {
-                throw new IllegalArgumentException("[ERROR] 상품이 존재하지 않습니다.");
+                throw new IllegalArgumentException(NOT_EXIST_PRODUCT.getMessage());
             }
             Product product = matchedProducts.get(0);
             product.buy(item.getQuantity(), localDate);

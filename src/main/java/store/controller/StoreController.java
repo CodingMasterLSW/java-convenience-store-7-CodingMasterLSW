@@ -6,6 +6,7 @@ import store.domain.PurchaseItem;
 import store.domain.parser.ProductParser;
 import store.domain.parser.PromotionParser;
 import store.domain.product.Product;
+import store.domain.product.Products;
 import store.domain.promotion.Promotion;
 import store.dto.ProductDto;
 import store.utils.FileLoader;
@@ -27,9 +28,10 @@ public class StoreController {
         PromotionParser promotionParser = PromotionParser.create();
 
         Map<String, Promotion> stringPromotionMap = promotionParser.parsePromotion(promotionLines);
-        List<Product> products = productParser.parseProducts(productLines, stringPromotionMap);
+        Products products = Products.create(
+                productParser.parseProducts(productLines, stringPromotionMap));
 
-        for (Product product : products) {
+        for (Product product : products.getProducts()) {
             // 프로모션 재고가 있는 경우에만 promotionDto 생성 및 출력
             if (product.getName() != null && product.getPromotion() != null) {
                 ProductDto promotionDto = product.toPromotionDto();
@@ -42,7 +44,9 @@ public class StoreController {
             }
         }
         String userInput = inputView.purchaseInput();
-        List<PurchaseItem> purchaseItems = InputParser.parseInputToItems(userInput);
+        InputParser inputParser = InputParser.from(products);
+        List<PurchaseItem> purchaseItems = inputParser.parseInputToItems(userInput);
+
 
     }
 
