@@ -24,7 +24,7 @@ public class Stock {
         if (promotion < quantity) {
             int lackQuantity = quantity - promotion;
             promotion = 0;
-            normal -= lackQuantity;
+            decreaseNormal(lackQuantity);
             return;
         }
         decreasePromotion(quantity);
