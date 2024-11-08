@@ -5,6 +5,7 @@ import java.util.Collections;
 import java.util.List;
 import store.domain.product.Product;
 import store.domain.product.Products;
+import store.dto.PurchaseDto;
 
 public class Purchase {
 
@@ -20,8 +21,9 @@ public class Purchase {
         return new Purchase(items, currentDate);
     }
 
-    public int execute(Products products, LocalDate localDate) {
+    public PurchaseDto calculatePurchaseInfo(Products products, LocalDate localDate) {
         int totalPrice = 0;
+        int totalQuantity = 0;
         for (PurchaseItem item : items) {
             List<Product> matchedProducts = products.findProductByName(item.getName());
             if (matchedProducts.isEmpty()) {
@@ -30,8 +32,9 @@ public class Purchase {
             Product product = matchedProducts.get(0);
             product.buy(item.getQuantity(), localDate);
             totalPrice += product.getPrice() * item.getQuantity();
+            totalQuantity += item.getQuantity();
         }
-        return totalPrice;
+        return PurchaseDto.from(totalPrice, totalQuantity);
     }
 
     public List<PurchaseItem> getItems() {
