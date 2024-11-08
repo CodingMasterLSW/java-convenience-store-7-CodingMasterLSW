@@ -2,6 +2,7 @@ package store.domain.product;
 
 import java.time.LocalDate;
 import store.domain.promotion.Promotion;
+import store.dto.ProductDto;
 
 public class Product {
 
@@ -61,6 +62,17 @@ public class Product {
 
     public Promotion getPromotion() {
         return promotion;
+    }
+
+    public ProductDto toNormalDto() {
+        return ProductDto.of(
+                name, price, stock.getNormal(), null
+        );
+    }
+
+    public ProductDto toPromotionDto() {
+        return ProductDto.of(
+                name, price, stock.getPromotion(), promotion.getName());
     }
 }
 
