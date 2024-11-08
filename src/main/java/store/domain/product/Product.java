@@ -7,59 +7,42 @@ public class Product {
 
     private String name;
     private int price;
-    private int normalStock;
-    private int promotionStock;
+    private Stock stock;
     private Promotion promotion;
 
-    private Product(String name, int price, int normalStock, int promotionStock,
+    private Product(String name, int price, Stock stock,
             Promotion promotion) {
         this.name = name;
         this.price = price;
-        this.normalStock = normalStock;
-        this.promotionStock = promotionStock;
+        this.stock = stock;
         this.promotion = promotion;
     }
 
     public static Product ofNormal(String name, int price, int normalStock) {
-        return new Product(name, price, normalStock, 0, null);
+        Stock stock = Stock.from(normalStock, 0);
+        return new Product(name, price, stock, null);
     }
 
     public static Product ofPromotion(String name, int price, int promotionStock,
             Promotion promotion) {
-        return new Product(name, price, 0, promotionStock, promotion);
+        Stock stock = Stock.from(0, promotionStock);
+        return new Product(name, price, stock, promotion);
     }
 
     public static Product of(String name, int price, int normalStock, int promotionStock,
             Promotion promotion) {
-        return new Product(name, price, normalStock, promotionStock, promotion);
-    }
-
-    public void addNormalStock(int stock) {
-        this.normalStock += stock;
-    }
-
-    public void addPromotionStock(int stock, Promotion promotion) {
-        this.promotionStock += stock;
-        this.promotion = promotion;
+        Stock stock = Stock.from(normalStock, promotionStock);
+        return new Product(name, price, stock, promotion);
     }
 
     public void buy(int quantity, LocalDate localDate) {
         if (promotion.isDate(localDate)) {
-            handlePromotionStockShortage(quantity);
+            stock.handlePromotionStockShortage(quantity);
             return;
         }
-        normalStock -= quantity;
+        stock.decreaseNormal(quantity);
     }
 
-    private void handlePromotionStockShortage(int quantity) {
-        if (promotionStock < quantity) {
-            int lackQuantity = quantity - promotionStock;
-            promotionStock = 0;
-            normalStock -= lackQuantity;
-            return;
-        }
-        promotionStock -= quantity;
-    }
 
     public String getName() {
         return name;
@@ -69,12 +52,12 @@ public class Product {
         return price;
     }
 
-    public int getNormalStock() {
-        return normalStock;
+    public Stock getStock() {
+        return stock;
     }
 
-    public int getPromotionStock() {
-        return promotionStock;
+    public Promotion getPromotion() {
+        return promotion;
     }
 }
 

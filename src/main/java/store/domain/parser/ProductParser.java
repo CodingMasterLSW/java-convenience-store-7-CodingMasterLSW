@@ -51,12 +51,12 @@ public class ProductParser {
     private void addStockToExistingProduct(Product product, int price, int quantity, String promotionName, Map<String, Promotion> promotions) {
         validatePriceConsistency(product, price);
         if (isNullOrEmpty(promotionName)) {
-            product.addNormalStock(quantity);
+            product.getStock().addNormal(quantity); // Stock에 직접 재고 추가
         } else {
-            Promotion promotion = getPromotion(promotionName, promotions);
-            product.addPromotionStock(quantity, promotion);
+            product.getStock().addPromotion(quantity); // Stock에 프로모션 재고 추가
         }
     }
+
 
     private void validatePriceConsistency(Product product, int price) {
         if (product.getPrice() != price) {
