@@ -1,5 +1,7 @@
 package store.domain;
 
+import static store.exception.ErrorMessage.MINIMUM_PURCHASE_AMOUNT;
+
 import java.util.Objects;
 
 public class PurchaseItem {
@@ -18,8 +20,8 @@ public class PurchaseItem {
     }
 
     public void validateQuantity(int quantity) {
-        if (quantity < 0) {
-            throw new IllegalArgumentException("[ERROR] 구매수량은 1 이상이어야 합니다.");
+        if (quantity <= 0) {
+            throw new IllegalArgumentException(MINIMUM_PURCHASE_AMOUNT.getMessage());
         }
     }
 
