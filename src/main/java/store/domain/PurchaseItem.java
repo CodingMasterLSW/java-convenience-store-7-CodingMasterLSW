@@ -23,6 +23,14 @@ public class PurchaseItem {
         }
     }
 
+    public String getName() {
+        return name;
+    }
+
+    public int getQuantity() {
+        return quantity;
+    }
+
     @Override
     public boolean equals(Object object) {
         if (this == object) {
