@@ -20,10 +20,22 @@ public class Stock {
         normal -= quantity;
     }
 
-    public void decreasePromotion(int quantity) {
+    public void handlePromotionStock(int quantity) {
+        if (promotion < quantity) {
+            int lackQuantity = quantity - promotion;
+            promotion = 0;
+            normal -= lackQuantity;
+            return;
+        }
+        decreasePromotion(quantity);
+    }
+
+    private void decreasePromotion(int quantity) {
         validateQuantity(quantity, promotion);
         promotion -= quantity;
     }
+
+
 
     public void validateInitQuantity(int normalQuantity, int promotionQuantity) {
         if (normalQuantity < 0 || promotionQuantity < 0) {
@@ -43,16 +55,6 @@ public class Stock {
 
     public void addPromotion(int stock) {
         this.promotion += stock;
-    }
-
-    public void handlePromotionStockShortage(int quantity) {
-        if (promotion < quantity) {
-            int lackQuantity = quantity - promotion;
-            promotion = 0;
-            normal -= lackQuantity;
-            return;
-        }
-        promotion -= quantity;
     }
 
     public int getNormal() {

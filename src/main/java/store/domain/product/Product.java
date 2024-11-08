@@ -37,7 +37,7 @@ public class Product {
 
     public void buy(int quantity, LocalDate localDate) {
         if (promotion.isDate(localDate)) {
-            stock.handlePromotionStockShortage(quantity);
+            stock.handlePromotionStock(quantity);
             return;
         }
         stock.decreaseNormal(quantity);
