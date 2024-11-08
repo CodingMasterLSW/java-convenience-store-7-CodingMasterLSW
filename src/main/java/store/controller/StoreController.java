@@ -2,17 +2,21 @@ package store.controller;
 
 import java.util.List;
 import java.util.Map;
+import store.domain.PurchaseItem;
 import store.domain.parser.ProductParser;
 import store.domain.parser.PromotionParser;
 import store.domain.product.Product;
 import store.domain.promotion.Promotion;
 import store.dto.ProductDto;
 import store.utils.FileLoader;
+import store.utils.InputParser;
+import store.view.InputView;
 import store.view.OutputView;
 
 public class StoreController {
 
     private OutputView outputView = new OutputView();
+    private InputView inputView = new InputView();
 
     public void start() {
         outputView.printProductMessage();
@@ -37,6 +41,8 @@ public class StoreController {
                 outputView.printProductDto(normalDto);
             }
         }
+        String userInput = inputView.purchaseInput();
+        List<PurchaseItem> purchaseItems = InputParser.parseInputToItems(userInput);
 
     }
 
