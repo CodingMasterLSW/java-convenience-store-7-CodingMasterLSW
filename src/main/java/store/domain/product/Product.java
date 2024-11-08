@@ -36,13 +36,16 @@ public class Product {
     }
 
     public void buy(int quantity, LocalDate localDate) {
-        if (promotion.isDate(localDate)) {
-            stock.handlePromotionStock(quantity);
+        if (promotion == null || !promotion.isDate(localDate)) {
+            stock.decreaseNormal(quantity);
             return;
         }
-        stock.decreaseNormal(quantity);
+        stock.handlePromotionStock(quantity);
     }
 
+    public boolean hasName(String name) {
+        return this.name.equals(name);
+    }
 
     public String getName() {
         return name;
