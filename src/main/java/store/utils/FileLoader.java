@@ -11,6 +11,10 @@ public class FileLoader {
     private FileLoader(){
     }
 
+    public static FileLoader create() {
+        return new FileLoader();
+    }
+
     public static List<String> loadFile(String filePath) {
         List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {

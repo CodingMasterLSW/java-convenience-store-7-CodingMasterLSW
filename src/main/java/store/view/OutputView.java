@@ -9,6 +9,13 @@ public class OutputView {
     private static final String BLANK = "";
     private static final String PRODUCT_INFO = "- %s %,d원 %s %s";
 
+    private OutputView(){
+    }
+
+    public static OutputView create() {
+        return new OutputView();
+    }
+
     public void printProductMessage() {
         printMessage(INTRODUCE_MESSAGE);
         printMessage(CONTAIN_PRODUCT_MESSAGE);
