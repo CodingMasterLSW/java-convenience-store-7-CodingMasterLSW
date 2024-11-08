@@ -53,8 +53,8 @@ public class ProductTest {
     private void assertStock(int quantity, LocalDate localDate,
             int expectedNormalStock, int expectedPromotionStock) {
         product.buy(quantity, localDate);
-        assertThat(product.getNormalStock()).isEqualTo(expectedNormalStock);
-        assertThat(product.getPromotionStock()).isEqualTo(expectedPromotionStock);
+        assertThat(product.getStock().getNormal()).isEqualTo(expectedNormalStock);
+        assertThat(product.getStock().getPromotion()).isEqualTo(expectedPromotionStock);
     }
 
 }

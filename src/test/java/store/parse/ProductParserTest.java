@@ -47,10 +47,12 @@ public class ProductParserTest {
                 .collect(Collectors.toMap(Product::getName, product -> product));
 
         assertThat(productMap.get("콜라").getName()).isEqualTo("콜라");
-        assertThat(productMap.get("콜라").getNormalStock()).isEqualTo(10);
-        assertThat(productMap.get("콜라").getNormalStock()).isEqualTo(10);
-        assertThat(productMap.get("오렌지주스").getNormalStock()).isEqualTo(0);
-        assertThat(productMap.get("오렌지주스").getPromotionStock()).isEqualTo(9);
+        assertThat(productMap.get("콜라").getStock().getNormal()).isEqualTo(10);
+        assertThat(productMap.get("콜라").getStock().getPromotion()).isEqualTo(10);
+        assertThat(productMap.get("콜라").getPromotion().getName()).isEqualTo("탄산2+1");
+        assertThat(productMap.get("오렌지주스").getStock().getNormal()).isEqualTo(0);
+        assertThat(productMap.get("오렌지주스").getStock().getPromotion()).isEqualTo(9);
+
     }
 
 }
