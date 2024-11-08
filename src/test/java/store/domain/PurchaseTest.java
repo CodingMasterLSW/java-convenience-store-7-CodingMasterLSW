@@ -9,6 +9,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import store.domain.product.Product;
 import store.domain.product.Products;
+import store.dto.PurchaseDto;
 
 public class PurchaseTest {
 
@@ -26,7 +27,6 @@ public class PurchaseTest {
 
         purchaseItem1 = PurchaseItem.of("사과", 2);
         purchaseItem2 = PurchaseItem.of("바나나", 1);
-        purchaseItem3 = PurchaseItem.of("딸기잼", 3);
         items = List.of(
                 purchaseItem1,
                 purchaseItem2
@@ -46,8 +46,9 @@ public class PurchaseTest {
 
         LocalDate localDate = LocalDate.of(2024,11,22);
         Purchase purchase = Purchase.from(items, localDate);
-        int execute = purchase.execute(products, localDate);
-        assertThat(execute).isEqualTo(8000);
+        PurchaseDto purchaseDto = purchase.calculatePurchaseInfo(products, localDate);
+        assertThat(purchaseDto.getTotalPrice()).isEqualTo(8000);
+        assertThat(purchaseDto.getTotalQuantity()).isEqualTo(3);
         assertThat(product1.getStock().getNormal()).isEqualTo(8);
         assertThat(product1.getStock().getPromotion()).isEqualTo(10);
 
