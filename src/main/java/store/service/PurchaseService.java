@@ -10,32 +10,38 @@ import store.domain.purchase.PurchaseItem;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.product.dto.ProductDto;
+import store.domain.purchase.dto.PurchaseAlertDto;
 import store.domain.purchase.dto.PurchaseDto;
 import store.utils.InputParser;
 
 public class PurchaseService {
 
     private final Products products;
+    private Purchase purchase;
 
     public PurchaseService(Products products) {
         this.products = products;
     }
 
-    public PurchaseDto purchaseInfo(List<PurchaseItem> purchaseItems, LocalDate currentDate) {
-        Purchase purchase = Purchase.from(purchaseItems);
-        return purchase.calculatePurchaseInfo(products, currentDate);
-    }
-
-    public void addPurchaseItemStock(List<PurchaseItem> purchaseItems, PurchaseAlert purchaseAlert) {
-        Purchase purchase = Purchase.from(purchaseItems);
-        Optional<PurchaseItem> purchaseItem = purchase.findItemByName(purchaseAlert.getItemName());
-        purchaseItem.get().addQuantity(purchaseAlert.getFreeQuantity());
-    }
-
-    public List<PurchaseItem> purchaseItems(String userInput) {
+    public List<PurchaseItem> initializePurchase(String userInput) {
         InputParser inputParser = InputParser.from(products);
         List<PurchaseItem> purchaseItems = inputParser.parseInputToItems(userInput);
+        purchase = Purchase.from(purchaseItems);
         return purchaseItems;
+    }
+
+    public PurchaseAlertDto convertPurchaseAlertDto(PurchaseAlert purchaseAlert) {
+        return purchaseAlert.toDto();
+    }
+
+    public PurchaseDto purchaseInfo(LocalDate currentDate) {
+        purchase.calculatePurchaseInfo(products, currentDate);
+        return purchase.toDto(products);
+    }
+
+    public void addPurchaseItemStock(PurchaseAlert purchaseAlert) {
+        Optional<PurchaseItem> purchaseItem = purchase.findItemByName(purchaseAlert.getItemName());
+        purchaseItem.get().addQuantity(purchaseAlert.getFreeQuantity());
     }
 
     public Optional<PurchaseAlert> canAddFreeProduct(List<PurchaseItem> purchaseItems,
@@ -48,9 +54,7 @@ public class PurchaseService {
             PurchaseAlert purchaseAlert = PurchaseAlert.of(purchaseItem.getName(),
                     product.getPromotion(),
                     purchaseItem.getQuantity());
-            if (purchaseAlert.isApplicable()) {
-                return Optional.of(purchaseAlert);
-            }
+            return Optional.of(purchaseAlert);
         }
         return Optional.empty();
     }

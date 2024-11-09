@@ -1,6 +1,7 @@
 package store.domain.purchase;
 
 import store.domain.promotion.Promotion;
+import store.domain.purchase.dto.PurchaseAlertDto;
 
 public class PurchaseAlert {
 
@@ -33,6 +34,10 @@ public class PurchaseAlert {
 
     public int getFreeQuantity() {
         return freeQuantity;
+    }
+
+    public PurchaseAlertDto toDto() {
+        return PurchaseAlertDto.from(itemName, freeQuantity);
     }
 
 }
