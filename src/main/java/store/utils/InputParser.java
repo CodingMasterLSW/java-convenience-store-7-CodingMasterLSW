@@ -1,9 +1,11 @@
 package store.utils;
 
+import static store.exception.ErrorMessage.INVALID_INPUT;
 import static store.exception.ErrorMessage.NOT_EXIST_PRODUCT;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.regex.Pattern;
 import store.domain.purchase.PurchaseItem;
 import store.domain.product.Products;
 
@@ -11,6 +13,8 @@ public class InputParser {
 
     private static final String ITEM_DELIMITER = ",";
     private static final String PROPERTY_DELIMITER = "-";
+    private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
+
     private final Products products;
 
     private InputParser(Products products) {
@@ -35,19 +39,66 @@ public class InputParser {
     }
 
     private PurchaseItem parseItem(String item) {
-        String substring = item.substring(1, item.length() - 1);
-        List<String> itemProperties = List.of(substring.split(PROPERTY_DELIMITER));
-        String name = itemProperties.get(0);
-        int quantity = Integer.parseInt(itemProperties.get(1));
-        validateProduct(name);
+        String substring = removeBracket(item);
+        List<String> itemProperties = splitProperties(substring);
+
+        String name = extractProductName(itemProperties);
+        int quantity = extractQuantity(itemProperties);
+
         return PurchaseItem.of(name, quantity);
     }
 
-    private void validateProduct(String name) {
+    private int extractQuantity(List<String> itemProperties) {
+        String quantity = itemProperties.get(1);
+        if (quantity.isBlank() || quantity == null || !NUMBER_PATTERN.matcher(quantity)
+                .matches()) {
+            throw new IllegalArgumentException(INVALID_INPUT.getMessage());
+        }
+        return Integer.parseInt(quantity);
+    }
+
+    private String extractProductName(List<String> itemProperties) {
+        String name = itemProperties.get(0);
+        validateProductNameNotEmpty(name);
+        validateNotExistProduct(name);
+        return name;
+    }
+
+    private List<String> splitProperties(String substring) {
+        List<String> itemProperties = List.of(substring.split(PROPERTY_DELIMITER));
+        validateDelimiter(itemProperties);
+        return itemProperties;
+    }
+
+    private String removeBracket(String item) {
+        validateBracketsFormat(item);
+        return item.substring(1, item.length() - 1);
+    }
+
+    private void validateDelimiter(List<String> itemProperties) {
+        if (itemProperties.size() != 2) {
+            throw new IllegalArgumentException(INVALID_INPUT.getMessage());
+        }
+    }
+
+    private void validateNotExistProduct(String name) {
         if (products.isExist(name)) {
             return;
         }
         throw new IllegalArgumentException(NOT_EXIST_PRODUCT.getMessage());
+    }
+
+    private void validateBracketsFormat(String item) {
+        if (item.startsWith("[") && item.endsWith("]")) {
+            return;
+        }
+        throw new IllegalArgumentException(INVALID_INPUT.getMessage());
+    }
+
+    private void validateProductNameNotEmpty(String name) {
+        if (name.isBlank() || name == null) {
+            throw new IllegalArgumentException(INVALID_INPUT.getMessage());
+        }
     }
 
 }
