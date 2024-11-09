@@ -44,6 +44,10 @@ public class Product {
         stock.handlePromotionStock(quantity);
     }
 
+    public boolean isPromotionDate(LocalDate currentDate) {
+        return promotion.isDate(currentDate);
+    }
+
     public boolean hasName(String name) {
         return this.name.equals(name);
     }

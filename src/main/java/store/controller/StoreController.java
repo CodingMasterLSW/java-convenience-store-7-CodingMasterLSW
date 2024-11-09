@@ -2,6 +2,7 @@ package store.controller;
 
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.List;
+import store.domain.purchase.dto.PurchaseAlertDto;
 import store.service.PurchaseService;
 import store.domain.product.dto.ProductDto;
 import store.domain.purchase.dto.PurchaseDto;
@@ -38,6 +39,8 @@ public class StoreController {
                 DateTimes.now().toLocalDate());
 
         List<PurchaseItemDto> purchaseItemDtos = purchaseDto.getPurchaseItemDtos();
+        List<PurchaseAlertDto> purchaseAlertDtos = purchaseDto.getPurchaseAlertDtos();
+        outputView.printFreeItemInfo(purchaseAlertDtos);
         outputView.printPurchaseInfo(purchaseItemDtos);
         outputView.printTotalInfo(purchaseDto);
 

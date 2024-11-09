@@ -19,6 +19,14 @@ public class PurchaseService {
         this.products = products;
     }
 
+    public PurchaseDto purchaseItems(String userInput, LocalDate currentDate) {
+        InputParser inputParser = InputParser.from(products);
+        List<PurchaseItem> purchaseItems = inputParser.parseInputToItems(userInput);
+        Purchase purchase = Purchase.from(purchaseItems, currentDate);
+        PurchaseDto purchaseDto = purchase.calculatePurchaseInfo(products, currentDate);
+        return purchaseDto;
+    }
+
     public List<ProductDto> getProductDtos() {
         List<ProductDto> productDtos = new ArrayList<>();
         for (Product product : products.getProducts()) {
@@ -34,14 +42,6 @@ public class PurchaseService {
         if (product.getName() != null) {
             productDtos.add(product.toNormalDto());
         }
-    }
-
-    public PurchaseDto purchaseItems(String userInput, LocalDate currentDate) {
-        InputParser inputParser = InputParser.from(products);
-        List<PurchaseItem> purchaseItems = inputParser.parseInputToItems(userInput);
-        Purchase purchase = Purchase.from(purchaseItems, currentDate);
-        PurchaseDto purchaseDto = purchase.calculatePurchaseInfo(products, currentDate);
-        return purchaseDto;
     }
 
 }

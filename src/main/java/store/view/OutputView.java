@@ -2,6 +2,7 @@ package store.view;
 
 import java.util.List;
 import store.domain.product.dto.ProductDto;
+import store.domain.purchase.dto.PurchaseAlertDto;
 import store.domain.purchase.dto.PurchaseDto;
 import store.domain.purchase.dto.PurchaseItemDto;
 
@@ -16,12 +17,21 @@ public class OutputView {
     private static final String PURCHASE_INFO = "%s     %s      %,d";
     private static final String PURCHASE_DELIMITER = "====================================";
     private static final String TOTAL_INFO = "상품명      %,d  %,d";
+    private static final String FREE_ITEM_PROMPT_MESSAGE = "현재 %s은(는) %,d개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)";
 
-    private OutputView(){
+    private OutputView() {
     }
 
     public static OutputView create() {
         return new OutputView();
+    }
+
+    private static String getString(ProductDto productDto) {
+        String quantity = String.valueOf(productDto.getQuantity()) + "개";
+        if (quantity.equals("0개")) {
+            quantity = "재고 없음";
+        }
+        return quantity;
     }
 
     public void printProductMessage() {
@@ -44,30 +54,34 @@ public class OutputView {
         System.out.printf(TOTAL_INFO, purchaseDto.getTotalQuantity(), purchaseDto.getTotalPrice());
     }
 
+    public void printFreeItemInfo(List<PurchaseAlertDto> purchaseAlertDtos) {
+        for (PurchaseAlertDto purchaseAlertDto : purchaseAlertDtos) {
+            if (purchaseAlertDto == null) {
+                return;
+            }
+            System.out.printf(FREE_ITEM_PROMPT_MESSAGE, purchaseAlertDto.getProductName(),
+                    purchaseAlertDto.getFreeQuantity());
+            printMessage(BLANK);
+            return;
+        }
+    }
+
     public void printPurchaseInfo(List<PurchaseItemDto> purchaseItemDtos) {
         printMessage(RECEIPT_BANNER);
         printMessage(PURCHASE_SCHEMA);
         for (PurchaseItemDto purchaseItemDto : purchaseItemDtos) {
-            System.out.printf(PURCHASE_INFO, purchaseItemDto.getProductName(), purchaseItemDto.getQuantity(), purchaseItemDto.getPrice());
+            System.out.printf(PURCHASE_INFO, purchaseItemDto.getProductName(),
+                    purchaseItemDto.getQuantity(), purchaseItemDto.getPrice());
             System.out.println();
         }
-
     }
 
-    private static String getPromotion(ProductDto productDto) {
+    private String getPromotion(ProductDto productDto) {
         String promotion = productDto.getPromotion();
         if (productDto.getPromotion() == "null" || productDto.getPromotion() == null) {
             promotion = "";
         }
         return promotion;
-    }
-
-    private static String getString(ProductDto productDto) {
-        String quantity = String.valueOf(productDto.getQuantity()) +"개";
-        if (quantity.equals("0개")) {
-            quantity = "재고 없음";
-        }
-        return quantity;
     }
 
     private void printMessage(String message) {
