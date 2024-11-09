@@ -4,11 +4,13 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import store.domain.purchase.Purchase;
 import store.domain.purchase.PurchaseAlert;
 import store.domain.purchase.PurchaseItem;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.product.dto.ProductDto;
+import store.domain.purchase.dto.PurchaseDto;
 import store.utils.InputParser;
 
 public class PurchaseService {
@@ -17,6 +19,17 @@ public class PurchaseService {
 
     public PurchaseService(Products products) {
         this.products = products;
+    }
+
+    public PurchaseDto purchaseInfo(List<PurchaseItem> purchaseItems, LocalDate currentDate) {
+        Purchase purchase = Purchase.from(purchaseItems);
+        return purchase.calculatePurchaseInfo(products, currentDate);
+    }
+
+    public void addPurchaseItemStock(List<PurchaseItem> purchaseItems, PurchaseAlert purchaseAlert) {
+        Purchase purchase = Purchase.from(purchaseItems);
+        Optional<PurchaseItem> purchaseItem = purchase.findItemByName(purchaseAlert.getItemName());
+        purchaseItem.get().addQuantity(purchaseAlert.getFreeQuantity());
     }
 
     public List<PurchaseItem> purchaseItems(String userInput) {

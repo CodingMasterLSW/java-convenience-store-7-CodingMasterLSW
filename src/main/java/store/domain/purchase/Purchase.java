@@ -6,6 +6,8 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.promotion.Promotion;
@@ -16,15 +18,13 @@ import store.domain.purchase.dto.PurchaseItemDto;
 public class Purchase {
 
     private final List<PurchaseItem> items;
-    private LocalDate currentDate;
 
-    private Purchase(List<PurchaseItem> items, LocalDate currentDate) {
+    private Purchase(List<PurchaseItem> items) {
         this.items = items;
-        this.currentDate = currentDate;
     }
 
-    public static Purchase from(List<PurchaseItem> items, LocalDate currentDate) {
-        return new Purchase(items, currentDate);
+    public static Purchase from(List<PurchaseItem> items) {
+        return new Purchase(items);
     }
 
     public PurchaseDto calculatePurchaseInfo(Products products, LocalDate localDate) {
@@ -40,31 +40,10 @@ public class Purchase {
             totalQuantity += item.getQuantity();
             purchaseItemDtos.add(PurchaseItemDto.from(item.getName(), product.getPrice(),
                     item.getQuantity()));
-
-            PurchaseAlertDto purchaseAlert = checkFreeProduct(localDate, item, product);
-            if (purchaseAlert != null) {
-                purchaseAlertDtos.add(purchaseAlert);
-            }
         }
         return PurchaseDto.from(purchaseItemDtos, purchaseAlertDtos, totalPrice, totalQuantity);
     }
 
-    public PurchaseAlertDto checkFreeProduct(LocalDate localDate, PurchaseItem item, Product product) {
-        if (product.getPromotion() == null || !product.isPromotionDate(localDate)) {
-            return null;
-        }
-        Promotion promotion = product.getPromotion();
-        int requiredBuyQuantity = promotion.getBuy();
-        int freeQuantity = promotion.getGet();
-        int totalQuantity = item.getQuantity();
-
-        // 프로모션 조건을 충족했지만 혜택을 받지 않았을 때 PromotionAlertDto 반환
-        if (totalQuantity >= requiredBuyQuantity &&
-                totalQuantity % (requiredBuyQuantity + freeQuantity) != 0) {
-            return PurchaseAlertDto.from(product.getName(), freeQuantity);
-        }
-        return null;
-    }
 
     private void buyProduct(LocalDate localDate, PurchaseItem item, Product product) {
         validatePurchaseQuantity(item.getQuantity(), product.getTotalStock());
@@ -74,6 +53,12 @@ public class Purchase {
     private Product findProduct(Products products, PurchaseItem item) {
         List<Product> matchedProducts = products.findProductByName(item.getName());
         return matchedProducts.get(0);
+    }
+
+    public Optional<PurchaseItem> findItemByName(String name) {
+        return items.stream()
+                .filter(purchaseItem -> purchaseItem.getName().equals(name))
+                .findFirst();
     }
 
     public List<PurchaseItem> getItems() {

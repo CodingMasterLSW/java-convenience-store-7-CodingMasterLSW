@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import store.domain.purchase.PurchaseAlert;
 import store.domain.purchase.PurchaseItem;
+import store.domain.purchase.dto.PurchaseDto;
 import store.service.PurchaseService;
 import store.domain.product.dto.ProductDto;
 import store.view.InputView;
@@ -39,11 +40,15 @@ public class StoreController {
                 .toLocalDate());
         if(purchaseAlert.isPresent()) {
             outputView.printFreeItemInfo(purchaseAlert.get());
-            inputView.promptYesOrNo();
+            String prompt = inputView.promptYesOrNo();
+            if(prompt.equals("Y")) {
+                purchaseService.addPurchaseItemStock(purchaseItems, purchaseAlert.get());
+            }
         }
-
-
-
+        PurchaseDto purchaseDto = purchaseService.purchaseInfo(purchaseItems,
+                DateTimes.now().toLocalDate());
+        outputView.printPurchaseInfo(purchaseDto.getPurchaseItemDtos());
+        outputView.printTotalInfo(purchaseDto);
     }
 
 }
