@@ -3,11 +3,13 @@ package store.domain;
 import static store.exception.ErrorMessage.NOT_EXIST_PRODUCT;
 
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.dto.PurchaseDto;
+import store.dto.PurchaseItemDto;
 
 public class Purchase {
 
@@ -24,6 +26,7 @@ public class Purchase {
     }
 
     public PurchaseDto calculatePurchaseInfo(Products products, LocalDate localDate) {
+        List<PurchaseItemDto> purchaseItemDtos = new ArrayList<>();
         int totalPrice = 0;
         int totalQuantity = 0;
         for (PurchaseItem item : items) {
@@ -35,8 +38,10 @@ public class Purchase {
             product.buy(item.getQuantity(), localDate);
             totalPrice += product.getPrice() * item.getQuantity();
             totalQuantity += item.getQuantity();
+            purchaseItemDtos.add(PurchaseItemDto.from(item.getName(), product.getPrice(),
+                    item.getQuantity()));
         }
-        return PurchaseDto.from(totalPrice, totalQuantity);
+        return PurchaseDto.from(purchaseItemDtos, totalPrice, totalQuantity);
     }
 
     public List<PurchaseItem> getItems() {

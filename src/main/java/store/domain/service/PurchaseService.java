@@ -1,11 +1,14 @@
 package store.domain.service;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import store.domain.Purchase;
 import store.domain.PurchaseItem;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.dto.ProductDto;
+import store.dto.PurchaseDto;
 import store.utils.InputParser;
 
 public class PurchaseService {
@@ -33,9 +36,12 @@ public class PurchaseService {
         }
     }
 
-    public List<PurchaseItem> purchaseItems(String userInput, Products products) {
+    public PurchaseDto purchaseItems(String userInput, LocalDate currentDate) {
         InputParser inputParser = InputParser.from(products);
-        return inputParser.parseInputToItems(userInput);
+        List<PurchaseItem> purchaseItems = inputParser.parseInputToItems(userInput);
+        Purchase purchase = Purchase.from(purchaseItems, currentDate);
+        PurchaseDto purchaseDto = purchase.calculatePurchaseInfo(products, currentDate);
+        return purchaseDto;
     }
 
 }

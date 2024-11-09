@@ -1,6 +1,9 @@
 package store.view;
 
+import java.util.List;
 import store.dto.ProductDto;
+import store.dto.PurchaseDto;
+import store.dto.PurchaseItemDto;
 
 public class OutputView {
 
@@ -29,6 +32,21 @@ public class OutputView {
         String promotion = getPromotion(productDto);
         System.out.printf(PRODUCT_INFO, name, price, quantity, promotion);
         System.out.println();
+    }
+
+    public void printTotalInfo(PurchaseDto purchaseDto) {
+        System.out.println(purchaseDto.getTotalPrice());
+        System.out.println(purchaseDto.getTotalQuantity());
+    }
+
+    public void printPurchaseInfo(List<PurchaseItemDto> purchaseItemDtos) {
+        for (PurchaseItemDto purchaseItemDto : purchaseItemDtos) {
+            System.out.println(purchaseItemDto.getProductName());
+            System.out.println(purchaseItemDto.getPrice());
+            System.out.println(purchaseItemDto.getQuantity());
+            System.out.println();
+        }
+
     }
 
     private static String getPromotion(ProductDto productDto) {
