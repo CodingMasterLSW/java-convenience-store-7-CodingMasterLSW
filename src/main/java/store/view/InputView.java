@@ -1,5 +1,7 @@
 package store.view;
 
+import static store.exception.ErrorMessage.INVALID_INPUT;
+
 import camp.nextstep.edu.missionutils.Console;
 
 public class InputView {
@@ -15,7 +17,9 @@ public class InputView {
     }
 
     public String promptYesOrNo() {
-        return Console.readLine();
+        String prompt = Console.readLine();
+        validatePrompt(prompt);
+        return prompt;
     }
 
     public String purchaseInput() {
@@ -27,6 +31,13 @@ public class InputView {
 
     private void printMessage(String message) {
         System.out.println(message);
+    }
+
+    private void validatePrompt(String prompt) {
+        if (prompt.equals("Y") || prompt.equals("Y")) {
+            return;
+        }
+        throw new IllegalArgumentException(INVALID_INPUT.getMessage());
     }
 
 
