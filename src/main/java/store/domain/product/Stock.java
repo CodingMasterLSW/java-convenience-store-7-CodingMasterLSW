@@ -65,4 +65,8 @@ public class Stock {
         return promotion;
     }
 
+    public int getTotal() {
+        return promotion + normal;
+    }
+
 }

@@ -60,6 +60,10 @@ public class Product {
         return stock;
     }
 
+    public int getTotalStock() {
+        return stock.getTotal();
+    }
+
     public Promotion getPromotion() {
         return promotion;
     }

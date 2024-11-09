@@ -1,6 +1,7 @@
 package store.domain.purchase;
 
 import static store.exception.ErrorMessage.NOT_EXIST_PRODUCT;
+import static store.exception.ErrorMessage.OVER_STOCK_PURCHASE;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -35,6 +36,7 @@ public class Purchase {
                 throw new IllegalArgumentException(NOT_EXIST_PRODUCT.getMessage());
             }
             Product product = matchedProducts.get(0);
+            validatePurchaseQuantity(item.getQuantity(), product.getTotalStock());
             product.buy(item.getQuantity(), localDate);
             totalPrice += product.getPrice() * item.getQuantity();
             totalQuantity += item.getQuantity();
@@ -46,5 +48,11 @@ public class Purchase {
 
     public List<PurchaseItem> getItems() {
         return Collections.unmodifiableList(items);
+    }
+
+    private void validatePurchaseQuantity(int purchaseQuantity, int totalStock) {
+        if (purchaseQuantity > totalStock) {
+            throw new IllegalArgumentException(OVER_STOCK_PURCHASE.getMessage());
+        }
     }
 }
