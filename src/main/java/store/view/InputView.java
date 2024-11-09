@@ -44,7 +44,7 @@ public class InputView {
     }
 
     private void validatePrompt(String prompt) {
-        if (prompt.equals("Y") || prompt.equals("Y")) {
+        if (prompt.equals("Y") || prompt.equals("N")) {
             return;
         }
         throw new IllegalArgumentException(INVALID_INPUT.getMessage());
