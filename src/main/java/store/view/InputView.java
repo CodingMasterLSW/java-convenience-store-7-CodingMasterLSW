@@ -14,6 +14,10 @@ public class InputView {
         return new InputView();
     }
 
+    public String promptYesOrNo() {
+        return Console.readLine();
+    }
+
     public String purchaseInput() {
         printMessage(BLANK);
         printMessage(PURCHASE_MESSAGE);

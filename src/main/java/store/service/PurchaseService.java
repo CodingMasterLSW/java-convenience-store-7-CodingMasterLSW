@@ -3,12 +3,12 @@ package store.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import store.domain.purchase.Purchase;
+import java.util.Optional;
+import store.domain.purchase.PurchaseAlert;
 import store.domain.purchase.PurchaseItem;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.product.dto.ProductDto;
-import store.domain.purchase.dto.PurchaseDto;
 import store.utils.InputParser;
 
 public class PurchaseService {
@@ -19,12 +19,32 @@ public class PurchaseService {
         this.products = products;
     }
 
-    public PurchaseDto purchaseItems(String userInput, LocalDate currentDate) {
+    public List<PurchaseItem> purchaseItems(String userInput) {
         InputParser inputParser = InputParser.from(products);
         List<PurchaseItem> purchaseItems = inputParser.parseInputToItems(userInput);
-        Purchase purchase = Purchase.from(purchaseItems, currentDate);
-        PurchaseDto purchaseDto = purchase.calculatePurchaseInfo(products, currentDate);
-        return purchaseDto;
+        return purchaseItems;
+    }
+
+    public Optional<PurchaseAlert> canAddFreeProduct(List<PurchaseItem> purchaseItems,
+            LocalDate currentDate) {
+        for (PurchaseItem purchaseItem : purchaseItems) {
+            Product product = findProduct(products, purchaseItem);
+            if (product.getPromotion() == null || !product.isPromotionDate(currentDate)) {
+                continue;
+            }
+            PurchaseAlert purchaseAlert = PurchaseAlert.of(purchaseItem.getName(),
+                    product.getPromotion(),
+                    purchaseItem.getQuantity());
+            if (purchaseAlert.isApplicable()) {
+                return Optional.of(purchaseAlert);
+            }
+        }
+        return Optional.empty();
+    }
+
+    private Product findProduct(Products products, PurchaseItem item) {
+        List<Product> matchedProducts = products.findProductByName(item.getName());
+        return matchedProducts.get(0);
     }
 
     public List<ProductDto> getProductDtos() {
@@ -43,5 +63,6 @@ public class PurchaseService {
             productDtos.add(product.toNormalDto());
         }
     }
+
 
 }

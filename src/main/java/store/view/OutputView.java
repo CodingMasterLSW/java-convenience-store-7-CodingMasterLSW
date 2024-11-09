@@ -2,7 +2,7 @@ package store.view;
 
 import java.util.List;
 import store.domain.product.dto.ProductDto;
-import store.domain.purchase.dto.PurchaseAlertDto;
+import store.domain.purchase.PurchaseAlert;
 import store.domain.purchase.dto.PurchaseDto;
 import store.domain.purchase.dto.PurchaseItemDto;
 
@@ -54,15 +54,11 @@ public class OutputView {
         System.out.printf(TOTAL_INFO, purchaseDto.getTotalQuantity(), purchaseDto.getTotalPrice());
     }
 
-    public void printFreeItemInfo(List<PurchaseAlertDto> purchaseAlertDtos) {
-        for (PurchaseAlertDto purchaseAlertDto : purchaseAlertDtos) {
-            if (purchaseAlertDto == null) {
-                return;
-            }
-            System.out.printf(FREE_ITEM_PROMPT_MESSAGE, purchaseAlertDto.getProductName(),
-                    purchaseAlertDto.getFreeQuantity());
+    public void printFreeItemInfo(PurchaseAlert purchaseAlert) {
+        if (purchaseAlert.isApplicable()) {
+            System.out.printf(FREE_ITEM_PROMPT_MESSAGE, purchaseAlert.getItemName(),
+                    purchaseAlert.getFreeQuantity());
             printMessage(BLANK);
-            return;
         }
     }
 

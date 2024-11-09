@@ -2,11 +2,11 @@ package store.controller;
 
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.List;
-import store.domain.purchase.dto.PurchaseAlertDto;
+import java.util.Optional;
+import store.domain.purchase.PurchaseAlert;
+import store.domain.purchase.PurchaseItem;
 import store.service.PurchaseService;
 import store.domain.product.dto.ProductDto;
-import store.domain.purchase.dto.PurchaseDto;
-import store.domain.purchase.dto.PurchaseItemDto;
 import store.view.InputView;
 import store.view.OutputView;
 
@@ -33,16 +33,16 @@ public class StoreController {
         for (ProductDto productDto : productDtos) {
             outputView.printProductDto(productDto);
         }
-
         String userInput = inputView.purchaseInput();
-        PurchaseDto purchaseDto = purchaseService.purchaseItems(userInput,
-                DateTimes.now().toLocalDate());
+        List<PurchaseItem> purchaseItems = purchaseService.purchaseItems(userInput);
+        Optional<PurchaseAlert> purchaseAlert = purchaseService.canAddFreeProduct(purchaseItems, DateTimes.now()
+                .toLocalDate());
+        if(purchaseAlert.isPresent()) {
+            outputView.printFreeItemInfo(purchaseAlert.get());
+            inputView.promptYesOrNo();
+        }
 
-        List<PurchaseItemDto> purchaseItemDtos = purchaseDto.getPurchaseItemDtos();
-        List<PurchaseAlertDto> purchaseAlertDtos = purchaseDto.getPurchaseAlertDtos();
-        outputView.printFreeItemInfo(purchaseAlertDtos);
-        outputView.printPurchaseInfo(purchaseItemDtos);
-        outputView.printTotalInfo(purchaseDto);
+
 
     }
 
