@@ -1,4 +1,4 @@
-package store.dto;
+package store.domain.purchase.dto;
 
 import java.util.Collections;
 import java.util.List;

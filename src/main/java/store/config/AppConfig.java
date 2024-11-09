@@ -3,7 +3,7 @@ package store.config;
 
 import store.controller.StoreController;
 import store.domain.product.Products;
-import store.domain.service.PurchaseService;
+import store.service.PurchaseService;
 import store.view.InputView;
 import store.view.OutputView;
 

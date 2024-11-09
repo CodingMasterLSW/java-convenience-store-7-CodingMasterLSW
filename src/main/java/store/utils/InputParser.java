@@ -4,7 +4,7 @@ import static store.exception.ErrorMessage.NOT_EXIST_PRODUCT;
 
 import java.util.ArrayList;
 import java.util.List;
-import store.domain.PurchaseItem;
+import store.domain.purchase.PurchaseItem;
 import store.domain.product.Products;
 
 public class InputParser {

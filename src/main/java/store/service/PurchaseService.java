@@ -1,14 +1,14 @@
-package store.domain.service;
+package store.service;
 
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import store.domain.Purchase;
-import store.domain.PurchaseItem;
+import store.domain.purchase.Purchase;
+import store.domain.purchase.PurchaseItem;
 import store.domain.product.Product;
 import store.domain.product.Products;
-import store.dto.ProductDto;
-import store.dto.PurchaseDto;
+import store.domain.product.dto.ProductDto;
+import store.domain.purchase.dto.PurchaseDto;
 import store.utils.InputParser;
 
 public class PurchaseService {

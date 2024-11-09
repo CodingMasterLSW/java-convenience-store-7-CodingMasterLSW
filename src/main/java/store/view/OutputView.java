@@ -1,9 +1,9 @@
 package store.view;
 
 import java.util.List;
-import store.dto.ProductDto;
-import store.dto.PurchaseDto;
-import store.dto.PurchaseItemDto;
+import store.domain.product.dto.ProductDto;
+import store.domain.purchase.dto.PurchaseDto;
+import store.domain.purchase.dto.PurchaseItemDto;
 
 public class OutputView {
 

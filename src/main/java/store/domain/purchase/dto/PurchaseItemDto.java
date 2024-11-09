@@ -1,4 +1,4 @@
-package store.dto;
+package store.domain.purchase.dto;
 
 public class PurchaseItemDto {
 

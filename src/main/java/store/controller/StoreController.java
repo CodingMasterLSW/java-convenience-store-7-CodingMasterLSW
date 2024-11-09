@@ -2,10 +2,10 @@ package store.controller;
 
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.List;
-import store.domain.service.PurchaseService;
-import store.dto.ProductDto;
-import store.dto.PurchaseDto;
-import store.dto.PurchaseItemDto;
+import store.service.PurchaseService;
+import store.domain.product.dto.ProductDto;
+import store.domain.purchase.dto.PurchaseDto;
+import store.domain.purchase.dto.PurchaseItemDto;
 import store.view.InputView;
 import store.view.OutputView;
 

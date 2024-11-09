@@ -1,4 +1,4 @@
-package store.domain;
+package store.domain.purchase;
 
 import static store.exception.ErrorMessage.MINIMUM_PURCHASE_AMOUNT;
 

@@ -1,4 +1,4 @@
-package store.domain;
+package store.domain.purchase;
 
 import static store.exception.ErrorMessage.NOT_EXIST_PRODUCT;
 
@@ -8,8 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import store.domain.product.Product;
 import store.domain.product.Products;
-import store.dto.PurchaseDto;
-import store.dto.PurchaseItemDto;
+import store.domain.purchase.dto.PurchaseDto;
+import store.domain.purchase.dto.PurchaseItemDto;
 
 public class Purchase {
 

@@ -2,7 +2,7 @@ package store.domain.product;
 
 import java.time.LocalDate;
 import store.domain.promotion.Promotion;
-import store.dto.ProductDto;
+import store.domain.product.dto.ProductDto;
 
 public class Product {
 

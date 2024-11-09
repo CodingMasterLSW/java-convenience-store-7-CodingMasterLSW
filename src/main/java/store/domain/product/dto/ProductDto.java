@@ -1,4 +1,4 @@
-package store.dto;
+package store.domain.product.dto;
 
 public class ProductDto {
 
