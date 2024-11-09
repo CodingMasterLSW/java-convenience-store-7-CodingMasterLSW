@@ -1,5 +1,6 @@
 package store.controller;
 
+import camp.nextstep.edu.missionutils.Console;
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.List;
 import java.util.Optional;
@@ -30,25 +31,35 @@ public class StoreController {
     }
 
     public void start() {
-        List<ProductDto> productDtos = purchaseService.getProductDtos();
-        for (ProductDto productDto : productDtos) {
-            outputView.printProductDto(productDto);
-        }
-        String userInput = inputView.purchaseInput();
-        List<PurchaseItem> purchaseItems = purchaseService.purchaseItems(userInput);
-        Optional<PurchaseAlert> purchaseAlert = purchaseService.canAddFreeProduct(purchaseItems, DateTimes.now()
-                .toLocalDate());
-        if(purchaseAlert.isPresent()) {
-            outputView.printFreeItemInfo(purchaseAlert.get());
-            String prompt = inputView.promptYesOrNo();
-            if(prompt.equals("Y")) {
-                purchaseService.addPurchaseItemStock(purchaseItems, purchaseAlert.get());
+
+        while(true) {
+            outputView.printProductMessage();
+            List<ProductDto> productDtos = purchaseService.getProductDtos();
+            for (ProductDto productDto : productDtos) {
+                outputView.printProductDto(productDto);
+            }
+            String userInput = inputView.purchaseInput();
+            List<PurchaseItem> purchaseItems = purchaseService.purchaseItems(userInput);
+            Optional<PurchaseAlert> purchaseAlert = purchaseService.canAddFreeProduct(purchaseItems,
+                    DateTimes.now()
+                            .toLocalDate());
+            if (purchaseAlert.isPresent()) {
+                outputView.printFreeItemInfo(purchaseAlert.get());
+                String prompt = inputView.promptYesOrNo();
+                if (prompt.equals("Y")) {
+                    purchaseService.addPurchaseItemStock(purchaseItems, purchaseAlert.get());
+                }
+            }
+            PurchaseDto purchaseDto = purchaseService.purchaseInfo(purchaseItems,
+                    DateTimes.now().toLocalDate());
+            outputView.printPurchaseInfo(purchaseDto.getPurchaseItemDtos());
+            outputView.printTotalInfo(purchaseDto);
+
+            String decision = inputView.continueInput();
+            if (decision.equals("N")) {
+                break;
             }
         }
-        PurchaseDto purchaseDto = purchaseService.purchaseInfo(purchaseItems,
-                DateTimes.now().toLocalDate());
-        outputView.printPurchaseInfo(purchaseDto.getPurchaseItemDtos());
-        outputView.printTotalInfo(purchaseDto);
     }
 
 }

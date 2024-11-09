@@ -18,7 +18,7 @@ public class OutputView {
     private static final String PURCHASE_DELIMITER = "====================================";
     private static final String TOTAL_INFO = "상품명      %,d  %,d";
     private static final String FREE_ITEM_PROMPT_MESSAGE = "현재 %s은(는) %,d개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)";
-
+    
     private OutputView() {
     }
 
