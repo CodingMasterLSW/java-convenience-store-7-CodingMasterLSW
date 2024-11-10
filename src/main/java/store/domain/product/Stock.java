@@ -30,7 +30,7 @@ public class Stock {
         decreasePromotion(quantity);
     }
 
-    private void decreasePromotion(int quantity) {
+    public void decreasePromotion(int quantity) {
         validateQuantity(quantity, promotion);
         promotion -= quantity;
     }

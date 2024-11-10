@@ -41,6 +41,10 @@ public class OutputView {
         return quantity;
     }
 
+    public void printInsufficientPromotionStockInfo(String productName, int remainingQuantity) {
+        System.out.printf("현재 %s %d개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)\n", productName, remainingQuantity);
+    }
+
     public void printGive(PurchaseGifts purchaseGifts) {
         printMessage(GIVE_MESSAGE);
         for (PurchaseGift purchaseGift : purchaseGifts.getGifts()) {

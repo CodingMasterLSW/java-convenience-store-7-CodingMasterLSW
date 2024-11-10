@@ -1,5 +1,6 @@
 package store.domain.product;
 
+import camp.nextstep.edu.missionutils.DateTimes;
 import java.time.LocalDate;
 import store.domain.promotion.Promotion;
 import store.domain.product.dto.ProductDto;
@@ -34,6 +35,29 @@ public class Product {
             Promotion promotion) {
         Stock stock = Stock.from(normalStock, promotionStock);
         return new Product(name, price, stock, promotion);
+    }
+
+    public boolean checkAndBuyWithPromotion(int quantity, boolean useNormalStockIfNeeded) {
+        if (promotion == null || !promotion.isDate(DateTimes.now().toLocalDate())) {
+            stock.decreaseNormal(quantity);
+            return true;
+        }
+
+        int availablePromotionStock = stock.getPromotion();
+
+        int promotionStockToDeduct = Math.min(quantity, availablePromotionStock);
+        stock.decreasePromotion(promotionStockToDeduct);
+
+        int normalStockToDeduct = quantity - promotionStockToDeduct;
+        if (normalStockToDeduct > 0) {
+            if (useNormalStockIfNeeded) {
+                stock.decreaseNormal(normalStockToDeduct);
+            } else {
+                // 구매하지 않기로 선택한 경우
+                return false;
+            }
+        }
+        return true;
     }
 
     public void buy(int quantity, LocalDate localDate) {
@@ -81,6 +105,10 @@ public class Product {
     public ProductDto toPromotionDto() {
         return ProductDto.of(
                 name, price, stock.getPromotion(), promotion.getName());
+    }
+
+    public int getPromotionStock() {
+        return stock.getPromotion();
     }
 }
 

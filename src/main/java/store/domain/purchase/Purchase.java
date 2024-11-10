@@ -37,18 +37,23 @@ public class Purchase {
     public void calculatePurchaseInfo(Products products, LocalDate localDate) {
         for (PurchaseItem item : items) {
             Product product = findProduct(products, item);
-            buyProduct(localDate, item, product);
-            totalPrice += product.getPrice() * item.getQuantity();
-            totalQuantity += item.getQuantity();
+            int quantity = item.getQuantity();
+            int price = product.getPrice();
+
+            totalPrice += price * quantity;
+            totalQuantity += quantity;
 
             Promotion promotion = product.getPromotion();
             if (promotion != null && product.isPromotionDate(localDate)) {
-                int freeQuantity = calculateFreeItems(item.getQuantity(), promotion);
-                discount.addPromotionAmount(freeQuantity * product.getPrice());
+                int freeQuantityPerSet = promotion.getGet();
+                int applicableSets = item.getPromotionSetsApplied(); // 실제 적용된 프로모션 세트 수 사용
+
+                int freeQuantity = applicableSets * freeQuantityPerSet;
+
+                discount.addPromotionAmount(freeQuantity * price);
                 purchaseGifts.addGift(PurchaseGift.of(item.getName(), freeQuantity));
             }
         }
-
     }
 
     private int calculateFreeItems(int quantity, Promotion promotion) {
@@ -125,3 +130,4 @@ public class Purchase {
         }
     }
 }
+

@@ -4,6 +4,7 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import store.domain.promotion.Promotion;
 import store.domain.purchase.Purchase;
 import store.domain.purchase.PurchaseAlert;
 import store.domain.purchase.PurchaseGifts;
@@ -30,6 +31,13 @@ public class PurchaseService {
         return purchaseItems;
     }
 
+
+
+    public boolean isPromotionApplicable(PurchaseItem item, LocalDate date) {
+        Product product = findProduct(products, item);
+        return product.getPromotion() != null && product.isPromotionDate(date);
+    }
+
     public PurchaseDto purchaseInfo(LocalDate currentDate) {
         purchase.calculatePurchaseInfo(products, currentDate);
         return purchase.toDto(products);
@@ -37,11 +45,6 @@ public class PurchaseService {
 
     public PurchaseGifts getPurchaseGifts() {
         return purchase.getPurchaseGifts();
-    }
-
-    public void addPurchaseItemStock(PurchaseAlert purchaseAlert) {
-        Optional<PurchaseItem> purchaseItem = purchase.findItemByName(purchaseAlert.getItemName());
-        purchaseItem.get().addQuantity(purchaseAlert.getFreeQuantity());
     }
 
     public Optional<PurchaseAlert> canAddFreeProduct(List<PurchaseItem> purchaseItems,
@@ -57,6 +60,11 @@ public class PurchaseService {
             return Optional.of(purchaseAlert);
         }
         return Optional.empty();
+    }
+
+    public boolean checkPromotionAndHandlePurchase(PurchaseItem item, boolean useNormalStockIfNeeded) {
+        Product product = findProduct(products, item);
+        return product.checkAndBuyWithPromotion(item.getQuantity(), useNormalStockIfNeeded);
     }
 
     private Product findProduct(Products products, PurchaseItem item) {
@@ -79,6 +87,11 @@ public class PurchaseService {
         if (product.getName() != null) {
             productDtos.add(product.toNormalDto());
         }
+    }
+
+    public Product findProduct(PurchaseItem item) {
+        List<Product> matchedProducts = products.findProductByName(item.getName());
+        return matchedProducts.get(0);
     }
 
 

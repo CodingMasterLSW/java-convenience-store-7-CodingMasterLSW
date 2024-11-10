@@ -8,6 +8,7 @@ public class PurchaseItem {
 
     private final String name;
     private int quantity;
+    private int promotionSetsApplied;
 
     private PurchaseItem(String name, int quantity) {
         validateQuantity(quantity);
@@ -35,6 +36,18 @@ public class PurchaseItem {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public void setQuantity(int quantity) {
+        this.quantity = quantity;
+    }
+
+    public int getPromotionSetsApplied() {
+        return promotionSetsApplied;
+    }
+
+    public void setPromotionSetsApplied(int promotionSetsApplied) {
+        this.promotionSetsApplied = promotionSetsApplied;
     }
 
     @Override

@@ -9,8 +9,7 @@ public class PurchaseAlert {
     private final int freeQuantity;
     private final boolean isApplicable;
 
-    public PurchaseAlert(String itemName, int freeQuantity,
-            boolean isApplicable) {
+    public PurchaseAlert(String itemName, int freeQuantity, boolean isApplicable) {
         this.itemName = itemName;
         this.freeQuantity = freeQuantity;
         this.isApplicable = isApplicable;
