@@ -35,11 +35,20 @@ public class StoreController {
     public void start() {
 
         while (true) {
-            outputView.printProductMessage();
-            List<ProductDto> productDtos = purchaseService.getProductDtos();
-            for (ProductDto productDto : productDtos) {
-                outputView.printProductDto(productDto);
+
+            showCurrentProduct();
+
+            // 구매를 진행한다. 입력을 받고, 입력 아이템을 출력함.
+            List<PurchaseItem> purchaseItems = purchaseItems();
+
+            // 입력 아이템을 구매한다.
+            //
+
+            // 종료 메서드
+            if (isEnd()) {
+                break;
             }
+            /*
             String userInput = inputView.purchaseInput();
             List<PurchaseItem> purchaseItems = purchaseService.initializePurchase(userInput);
 
@@ -56,32 +65,47 @@ public class StoreController {
                     int freeQuantity = promotion.getGet();
                     int totalPromoUnits = requiredBuyQuantity + freeQuantity;
 
+                    // **1. 추가 구매를 통한 프로모션 혜택 확인**
+                    Optional<PurchaseAlert> purchaseAlert = purchaseService.canAddFreeProduct(
+                            purchaseItems, DateTimes.now().toLocalDate());
+                    if (purchaseAlert.isPresent() && purchaseAlert.get().isApplicable()) {
+                        outputView.printFreeItemInfo(purchaseAlert.get());
+                        String prompt = inputView.promptYesOrNo();
+                        if (prompt.equalsIgnoreCase("Y")) {
+                            item.addQuantity(purchaseAlert.get().getFreeQuantity());
+                            // 구매 수량이 변경되었으므로 적용 가능한 세트 수 재계산
+                            int maxSetsFromRequestedQuantity = item.getQuantity() / totalPromoUnits;
+                            applicableSets = Math.min(availablePromotionStock / totalPromoUnits, maxSetsFromRequestedQuantity);
+                            item.setPromotionSetsApplied(applicableSets);
+                        }
+                    }
+
+                    // **2. 프로모션 적용 가능한 세트 수 계산 및 남은 수량 확인**
                     int maxSetsFromPromotionStock = availablePromotionStock / totalPromoUnits;
                     int maxSetsFromRequestedQuantity = item.getQuantity() / totalPromoUnits;
                     applicableSets = Math.min(maxSetsFromPromotionStock, maxSetsFromRequestedQuantity);
-
                     int promotionApplicableQuantity = applicableSets * totalPromoUnits;
                     int remainingQuantity = item.getQuantity() - promotionApplicableQuantity;
 
                     item.setPromotionSetsApplied(applicableSets); // 프로모션 적용 세트 수 저장
 
+                    // **3. 프로모션 재고 부족 시 처리**
                     if (remainingQuantity > 0) {
                         outputView.printInsufficientPromotionStockInfo(item.getName(), remainingQuantity);
                         String prompt = inputView.promptYesOrNo();
                         if (prompt.equalsIgnoreCase("Y")) {
                             useNormalStockIfNeeded = true;
                         } else {
-                            // 구매하지 않기로 선택한 경우, 아이템의 수량을 프로모션 적용 수량으로 조정
+                            // 초과된 수량만큼 구매 수량 감소
                             item.setQuantity(promotionApplicableQuantity);
                         }
                     }
                 }
 
-                // **재고 차감 메서드 호출 추가**
+                // **재고 차감 메서드 호출**
                 boolean purchaseSuccess = purchaseService.checkPromotionAndHandlePurchase(item, useNormalStockIfNeeded);
                 if (!purchaseSuccess) {
-                    // 재고 차감에 실패한 경우에 대한 처리 (필요 시)
-                    // 예를 들어, 사용자에게 알림을 주거나 예외를 던질 수 있습니다.
+
                 }
             }
 
@@ -95,7 +119,7 @@ public class StoreController {
             outputView.printReceiptInfo(purchaseDto);
 
             String decision = inputView.continueInput();
-            if (decision.equals("N")) {
+            if (decision.equalsIgnoreCase("N")) {
                 break;
             }
         }
@@ -114,4 +138,30 @@ public class StoreController {
         return promotionApplicableQuantity;
     }
 
+}
+
+             */
+        }
+    }
+
+    private void showCurrentProduct() {
+        outputView.printProductMessage();
+        List<ProductDto> productDtos = purchaseService.getProductDtos();
+        for (ProductDto productDto : productDtos) {
+            outputView.printProductDto(productDto);
+        }
+    }
+
+    private List<PurchaseItem> purchaseItems() {
+        String userInput = inputView.purchaseInput();
+        return purchaseService.initializePurchase(userInput);
+    }
+
+    private boolean isEnd() {
+        String decision = inputView.continueInput();
+        if (decision.equalsIgnoreCase("N")) {
+            return true;
+        }
+        return false;
+    }
 }

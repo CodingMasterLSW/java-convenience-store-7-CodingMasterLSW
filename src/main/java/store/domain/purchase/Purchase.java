@@ -34,26 +34,35 @@ public class Purchase {
         return new Purchase(items);
     }
 
+    // 총 구매금액, 총 구매수량 설정하기
     public void calculatePurchaseInfo(Products products, LocalDate localDate) {
         for (PurchaseItem item : items) {
             Product product = findProduct(products, item);
             int quantity = item.getQuantity();
             int price = product.getPrice();
-
             totalPrice += price * quantity;
             totalQuantity += quantity;
-
-            Promotion promotion = product.getPromotion();
-            if (promotion != null && product.isPromotionDate(localDate)) {
-                int freeQuantityPerSet = promotion.getGet();
-                int applicableSets = item.getPromotionSetsApplied(); // 실제 적용된 프로모션 세트 수 사용
-
-                int freeQuantity = applicableSets * freeQuantityPerSet;
-
-                discount.addPromotionAmount(freeQuantity * price);
-                purchaseGifts.addGift(PurchaseGift.of(item.getName(), freeQuantity));
-            }
+            checkAndApplyPromotion(localDate, item, product, quantity, price);
         }
+    }
+
+    private void checkAndApplyPromotion(LocalDate localDate, PurchaseItem item, Product product, int quantity,
+            int price) {
+        if (product.hasPromotion() && product.isPromotionDate(localDate)) {
+            Promotion promotion = product.getPromotion();
+            applyPromotionDiscounts(item, promotion, quantity, price);
+        }
+    }
+
+    private void applyPromotionDiscounts(PurchaseItem item, Promotion promotion, int quantity, int price) {
+        int requiredQuantityPerSet = promotion.getBuy();
+        int freeQuantityPerSet = promotion.getGet();
+
+        int applicableSets = quantity / requiredQuantityPerSet;
+        int freeQuantity = applicableSets * freeQuantityPerSet;
+
+        discount.addPromotionAmount(freeQuantity * price);
+        purchaseGifts.addGift(PurchaseGift.of(item.getName(), freeQuantity));
     }
 
     private int calculateFreeItems(int quantity, Promotion promotion) {

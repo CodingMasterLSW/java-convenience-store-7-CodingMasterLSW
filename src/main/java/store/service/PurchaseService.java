@@ -4,7 +4,6 @@ import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import store.domain.promotion.Promotion;
 import store.domain.purchase.Purchase;
 import store.domain.purchase.PurchaseAlert;
 import store.domain.purchase.PurchaseGifts;
@@ -24,13 +23,13 @@ public class PurchaseService {
         this.products = products;
     }
 
+    // 상품을 입력받고 구매목록으로 바꿔서 출력한다.
     public List<PurchaseItem> initializePurchase(String userInput) {
         InputParser inputParser = InputParser.from(products);
         List<PurchaseItem> purchaseItems = inputParser.parseInputToItems(userInput);
         purchase = Purchase.from(purchaseItems);
         return purchaseItems;
     }
-
 
 
     public boolean isPromotionApplicable(PurchaseItem item, LocalDate date) {
@@ -41,6 +40,11 @@ public class PurchaseService {
     public PurchaseDto purchaseInfo(LocalDate currentDate) {
         purchase.calculatePurchaseInfo(products, currentDate);
         return purchase.toDto(products);
+    }
+
+    public void addPurchaseItemStock(PurchaseAlert purchaseAlert) {
+        Optional<PurchaseItem> purchaseItem = purchase.findItemByName(purchaseAlert.getItemName());
+        purchaseItem.get().addQuantity(purchaseAlert.getFreeQuantity());
     }
 
     public PurchaseGifts getPurchaseGifts() {

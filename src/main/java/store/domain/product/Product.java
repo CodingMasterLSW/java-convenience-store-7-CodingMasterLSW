@@ -37,6 +37,10 @@ public class Product {
         return new Product(name, price, stock, promotion);
     }
 
+    public boolean hasPromotion() {
+        return promotion != null;
+    }
+
     public boolean checkAndBuyWithPromotion(int quantity, boolean useNormalStockIfNeeded) {
         if (promotion == null || !promotion.isDate(DateTimes.now().toLocalDate())) {
             stock.decreaseNormal(quantity);
