@@ -24,11 +24,10 @@ public class InputView {
         return prompt;
     }
 
-    public void printInsufficientPromotionStockInfo(String productName, int remainingQuantity) {
+    public String printInsufficientPromotionStockInfo(String productName, int remainingQuantity) {
         System.out.printf(LACK_PROMOTION_STOCK_MESSAGE, productName, remainingQuantity);
         printMessage(BLANK);
-        Console.readLine();
-        printMessage(BLANK);
+        return promptYesOrNo();
     }
 
 

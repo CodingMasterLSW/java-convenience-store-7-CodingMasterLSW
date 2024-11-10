@@ -26,7 +26,7 @@ public class Stock {
     }
 
     public boolean lackOfPromotionStock(int quantity) {
-        return promotion >= quantity;
+        return promotion < quantity; // 프로모션 재고가 부족한 경우에만 true 반환
     }
 
     public void handlePromotionStock(int quantity) {

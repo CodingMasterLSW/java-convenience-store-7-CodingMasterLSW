@@ -41,12 +41,16 @@ public class StoreController {
 
             // ProductPromotionStock < purchaseAMount 일 경우, 입력받기
             PromotionStockDto promotionStockDto = purchaseService.checkPromotionStock();
+            boolean isEnoughStock = true;
             if (promotionStockDto !=  null) {
-                inputView.printInsufficientPromotionStockInfo(promotionStockDto.getProductName(), promotionStockDto.getLackPromotionStock());
+                String userInput = inputView.printInsufficientPromotionStockInfo(promotionStockDto.getProductName(), promotionStockDto.getLackPromotionStock());
+                if (!userInput.equalsIgnoreCase("Y")){
+                    isEnoughStock = false;
+                }
             }
 
             // 입력 아이템을 구매한다.
-            PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(), true);
+            PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(), isEnoughStock);
             outputView.printPurchaseInfo(purchaseDto.getItems());
             outputView.printGive(purchaseDto.getGifts());
             outputView.printReceiptInfo(purchaseDto);

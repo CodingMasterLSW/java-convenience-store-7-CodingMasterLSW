@@ -60,6 +60,17 @@ public class Product {
         return remainingQuantity;
     }
 
+    public int getNonPromotionQuantity(int purchaseQuantity) {
+        if (!hasPromotion() || !stock.hasPromotionStock()) {
+            return purchaseQuantity; // 프로모션이 없거나 프로모션 재고가 없으면 전체 수량이 비프로모션
+        }
+        return calculateLackPromotionStock(purchaseQuantity);
+    }
+
+    public void decreasePromotionStock(int quantity) {
+        stock.decreasePromotion(quantity);
+    }
+
     public void notEnoughPromotionProduct(int quantity, boolean continuePurchase) {
         if (stock.lackOfPromotionStock(quantity)) {
             handleInsufficientPromotionStock(quantity, continuePurchase);
@@ -106,6 +117,8 @@ public class Product {
         }
         return true;
     }
+
+
 
     public void buy(int quantity, LocalDate localDate) {
         if (promotion == null || !promotion.isDate(localDate)) {

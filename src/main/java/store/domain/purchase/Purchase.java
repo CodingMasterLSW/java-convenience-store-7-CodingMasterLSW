@@ -36,17 +36,95 @@ public class Purchase {
         return new Purchase(items);
     }
 
-    // 필드값 설정하는 메서드. totalPrice, totalQuantity, discount, purchaseGifts 설정
-    public void calculatePurchaseInfo(Products products, LocalDate localDate, boolean isContinue) {
+    public void calculatePurchaseInfo(Products products, LocalDate localDate,
+            boolean isIncludeNormalStock) {
         for (PurchaseItem item : items) {
-            int purchaseQuantity = item.getQuantity();
-            Product product = products.findProductByName(item.getName());
-            decreaseStock(localDate, isContinue, product, purchaseQuantity);
-            int price = product.getPrice();
-            totalPrice += price * purchaseQuantity;
-            totalQuantity += purchaseQuantity;
-            checkAndApplyPromotion(localDate, item, product, purchaseQuantity, price);
+            processPurchaseItem(products, item, localDate, isIncludeNormalStock);
         }
+    }
+
+    private void processPurchaseItem(Products products, PurchaseItem item, LocalDate localDate,
+            boolean isIncludeNormalStock) {
+        Product product = products.findProductByName(item.getName());
+        int requestedQuantity = item.getQuantity();
+        int nonPromotionQuantity = calculateNonPromotionQuantity(product, requestedQuantity);
+        if (shouldAdjustQuantity(isIncludeNormalStock, nonPromotionQuantity)) {
+            adjustPurchaseItemQuantity(item, requestedQuantity, nonPromotionQuantity);
+        }
+        int purchaseQuantity = item.getQuantity();
+        int promotionApplicableQuantity = handleStockDeduction(product, purchaseQuantity,
+                isIncludeNormalStock, localDate);
+        updateTotals(purchaseQuantity, product.getPrice());
+        applyPromotionDiscounts(product, promotionApplicableQuantity);
+    }
+
+    private int calculateNonPromotionQuantity(Product product, int purchaseQuantity) {
+        return product.getNonPromotionQuantity(purchaseQuantity);
+    }
+
+    private boolean shouldAdjustQuantity(boolean isIncludeNormalStock, int nonPromotionQuantity) {
+        return !isIncludeNormalStock && nonPromotionQuantity > 0;
+    }
+
+    private void adjustPurchaseItemQuantity(PurchaseItem item, int requestedQuantity,
+            int nonPromotionQuantity) {
+        int promotionApplicableQuantity = requestedQuantity - nonPromotionQuantity;
+        item.setQuantity(promotionApplicableQuantity);
+    }
+
+    private int handleStockDeduction(Product product, int purchaseQuantity,
+            boolean isIncludeNormalStock, LocalDate localDate) {
+        if (product.hasPromotion() && product.isPromotionDate(localDate)) {
+            return deductStockBasedOnNormalStock(product, purchaseQuantity, isIncludeNormalStock);
+        }
+        product.purchaseNormalProduct(purchaseQuantity);
+        return 0;
+    }
+
+    private int deductStockBasedOnNormalStock(Product product, int purchaseQuantity, boolean isIncludeNormalStock) {
+        if (isIncludeNormalStock) {
+            return deductStockWithNormal(product, purchaseQuantity);
+        }
+        return deductStockOnlyPromotion(product, purchaseQuantity);
+    }
+
+    private int deductStockWithNormal(Product product, int purchaseQuantity) {
+        int promotionApplicableQuantity = Math.min(purchaseQuantity, product.getPromotionStock());
+        product.decreasePromotionStock(promotionApplicableQuantity);
+        int normalQuantity = purchaseQuantity - promotionApplicableQuantity;
+        if (normalQuantity > 0) {
+            product.purchaseNormalProduct(normalQuantity);
+        }
+        return promotionApplicableQuantity;
+    }
+
+    private int deductStockOnlyPromotion(Product product, int purchaseQuantity) {
+        product.decreasePromotionStock(purchaseQuantity);
+        return purchaseQuantity;
+    }
+
+    private void updateTotals(int purchaseQuantity, int price) {
+        totalPrice += price * purchaseQuantity;
+        totalQuantity += purchaseQuantity;
+    }
+
+    private void applyPromotionDiscounts(Product product, int promotionApplicableQuantity) {
+        if (promotionApplicableQuantity > 0) {
+            Promotion promotion = product.getPromotion();
+            int freeQuantity = calculateFreeQuantity(promotion, promotionApplicableQuantity);
+            discount.addPromotionAmount(freeQuantity * product.getPrice());
+            if (freeQuantity > 0) {
+                purchaseGifts.addGift(PurchaseGift.of(product.getName(), freeQuantity));
+            }
+        }
+    }
+
+    private int calculateFreeQuantity(Promotion promotion, int promotionApplicableQuantity) {
+        int requiredQuantityPerSet = promotion.getBuy();
+        int freeQuantityPerSet = promotion.getGet();
+        int totalPromoUnits = requiredQuantityPerSet + freeQuantityPerSet;
+        int applicableSets = promotionApplicableQuantity / totalPromoUnits;
+        return applicableSets * freeQuantityPerSet;
     }
 
     public PromotionStockDto verifyPromotionStock(Products products) {
@@ -54,7 +132,7 @@ public class Purchase {
             int purchaseQuantity = item.getQuantity();
             Product product = products.findProductByName(item.getName());
             int lackPromotionStock = product.hasEnoughPromotionStock(purchaseQuantity);
-            if (lackPromotionStock != 0) {
+            if (lackPromotionStock > 0) {
                 return PromotionStockDto.of(product.getName(), lackPromotionStock);
             }
         }
