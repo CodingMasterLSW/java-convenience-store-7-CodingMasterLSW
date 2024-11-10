@@ -31,18 +31,22 @@ public class StoreController {
 
     public void start() {
         while (true) {
-            showCurrentProduct();
-            purchaseItems();
-            processPurchaseAlerts();
-            boolean isEnoughStock = checkAndPromptPromotionStock();
-            boolean isMembershipApplied = handleMembershipInput();
+            try {
+                showCurrentProduct();
+                purchaseItems();
+                processPurchaseAlerts();
+                boolean isEnoughStock = checkAndPromptPromotionStock();
+                boolean isMembershipApplied = handleMembershipInput();
 
-            PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(),
-                    isEnoughStock, isMembershipApplied);
+                PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(),
+                        isEnoughStock, isMembershipApplied);
 
-            displayPurchaseResult(purchaseDto);
-            if (isEnd()) {
-                break;
+                displayPurchaseResult(purchaseDto);
+                if (isEnd()) {
+                    break;
+                }
+            } catch (IllegalArgumentException e) {
+                outputView.printErrorMessage(e.getMessage());
             }
         }
     }
@@ -62,18 +66,33 @@ public class StoreController {
     }
 
     private void purchaseItems() {
-        String userInput = inputView.purchaseInput();
-        purchaseService.initializePurchase(userInput);
+        while (true) {
+            try {
+                String userInput = inputView.purchaseInput();
+                purchaseService.initializePurchase(userInput);
+                break;
+            } catch (IllegalArgumentException e) {
+                outputView.printErrorMessage(e.getMessage());
+            }
+        }
     }
 
     private boolean checkAndPromptPromotionStock() {
         PromotionStockDto promotionStockDto = purchaseService.checkPromotionStock();
         boolean isEnoughStock = true;
         if (promotionStockDto != null) {
-            String userInput = inputView.printInsufficientPromotionStockInfo(
-                    promotionStockDto.getProductName(), promotionStockDto.getLackPromotionStock());
-            if (!userInput.equalsIgnoreCase("Y")) {
-                isEnoughStock = false;
+            while (true) {
+                try {
+                    String userInput = inputView.printInsufficientPromotionStockInfo(
+                            promotionStockDto.getProductName(),
+                            promotionStockDto.getLackPromotionStock());
+                    if (!userInput.equalsIgnoreCase("Y")) {
+                        isEnoughStock = false;
+                    }
+                    break;
+                } catch (IllegalArgumentException e) {
+                    outputView.printErrorMessage(e.getMessage());
+                }
             }
         }
         return isEnoughStock;
@@ -95,18 +114,33 @@ public class StoreController {
     }
 
     private void handleGiftAlert(PurchaseAlert alert) {
-        if (alert.isApplicable()) {
-            String userInput = inputView.freeAlertInput(alert);
-            if (userInput.equalsIgnoreCase("Y")) {
-                purchaseService.applyGiftIfApplicable(alert);
+        while (true) {
+            try {
+                if (alert.isApplicable()) {
+                    String userInput = inputView.freeAlertInput(alert);
+                    if (userInput.equalsIgnoreCase("Y")) {
+                        purchaseService.applyGiftIfApplicable(alert);
+                    }
+                }
+                break;
+            } catch (IllegalArgumentException e) {
+                outputView.printErrorMessage(e.getMessage());
             }
         }
     }
 
-    private boolean handleMembershipInput () {
-        String userInput = inputView.promptMembershipDiscount();
-        if (userInput.equalsIgnoreCase("Y")) {
-            return true;
+    private boolean handleMembershipInput() {
+        while (true) {
+            try {
+                String userInput = inputView.promptMembershipDiscount();
+                if (userInput.equalsIgnoreCase("Y")) {
+                    return true;
+                }
+                break;
+            } catch (IllegalArgumentException e) {
+                outputView.printErrorMessage(e.getMessage());
+            }
+
         }
         return false;
     }

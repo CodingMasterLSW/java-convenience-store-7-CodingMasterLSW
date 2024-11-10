@@ -42,6 +42,9 @@ public class OutputView {
         return quantity;
     }
 
+    public void printErrorMessage(String message) {
+        System.out.println(message);
+    }
 
     public void printGive(List<PurchaseGiftDto> purchaseGiftsDtos) {
         printMessage(GIVE_MESSAGE);

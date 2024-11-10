@@ -63,6 +63,8 @@ public class Purchase {
             boolean isIncludeNormalStock) {
         Product product = products.findProductByName(item.getName());
         int requestedQuantity = item.getQuantity();
+        validatePurchaseQuantity(requestedQuantity, product.getTotalStock());
+
         int nonPromotionQuantity = calculateNonPromotionQuantity(product, requestedQuantity);
         if (shouldAdjustQuantity(isIncludeNormalStock, nonPromotionQuantity)) {
             adjustPurchaseItemQuantity(item, requestedQuantity, nonPromotionQuantity);
@@ -212,7 +214,6 @@ public class Purchase {
         }
     }
 
-
     private int calculateFreeItems(int quantity, Promotion promotion) {
         int requiredBuyQuantity = promotion.getBuy();
         int freeQuantity = promotion.getGet();
@@ -232,18 +233,6 @@ public class Purchase {
 
     public void addPromotionDiscount(int price) {
         discount.addPromotionAmount(price);
-    }
-
-    private void buyProduct(LocalDate localDate, PurchaseItem item, Product product) {
-        validatePurchaseQuantity(item.getQuantity(), product.getTotalStock());
-        product.buy(item.getQuantity(), localDate);
-    }
-
-    public void addGift(int freeQuantity, String itemName) {
-        if (freeQuantity > 0) {
-            // PurchaseGifts 객체에 새로운 증정품을 추가
-            purchaseGifts.addGift(PurchaseGift.of(itemName, freeQuantity));
-        }
     }
 
 }
