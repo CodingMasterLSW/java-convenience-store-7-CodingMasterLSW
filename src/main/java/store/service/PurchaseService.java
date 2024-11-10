@@ -44,7 +44,7 @@ public class PurchaseService {
         List<PurchaseAlert> alerts = new ArrayList<>();
         for (PurchaseItem item : purchase.getItems()) {
             Product product = products.findProductByName(item.getName());
-            if (product.hasPromotion()) {
+            if (product.hasPromotion() && !product.lackOfPromotion(item.getQuantity())) {
                 int purchasedQuantity = item.getQuantity();
                 Promotion promotion = product.getPromotion();
                 PurchaseAlert alert = PurchaseAlert.of(product.getName(), promotion, purchasedQuantity);
@@ -68,7 +68,7 @@ public class PurchaseService {
         }
     }
 
-    private PurchaseItem findItemByName(String itemName) {
+    public PurchaseItem findItemByName(String itemName) {
         return purchase.getItems().stream()
                 .filter(item -> item.getName().equals(itemName))
                 .findFirst()

@@ -41,6 +41,10 @@ public class Product {
         return promotion != null;
     }
 
+    public boolean lackOfPromotion(int purchaseQuantity) {
+        return stock.lackOfPromotionStock(purchaseQuantity);
+    }
+
     public int hasEnoughPromotionStock(int purchaseQuantity) {
         if (!hasPromotion() || !stock.hasPromotionStock()) {
             return 0;

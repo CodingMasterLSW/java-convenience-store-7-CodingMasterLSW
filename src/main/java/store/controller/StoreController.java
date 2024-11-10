@@ -34,6 +34,7 @@ public class StoreController {
             purchaseItems();
             processPurchaseAlerts();
             boolean isEnoughStock = checkAndPromptPromotionStock();
+
             PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(),
                     isEnoughStock);
             displayPurchaseResult(purchaseDto);

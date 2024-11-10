@@ -38,6 +38,7 @@ public class Stock {
         }
         decreasePromotion(quantity);
     }
+
     public boolean hasPromotionStock() {
         return promotion > 0;
     }

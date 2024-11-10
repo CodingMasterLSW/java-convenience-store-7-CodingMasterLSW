@@ -46,14 +46,8 @@ public class Purchase {
     private void processPurchaseItem(Products products, PurchaseItem item, LocalDate localDate,
             boolean isIncludeNormalStock) {
         Product product = products.findProductByName(item.getName());
-
-        // 현재 구매하려는 수량
         int requestedQuantity = item.getQuantity();
-
-        // 프로모션이 적용되지 않는 수량
         int nonPromotionQuantity = calculateNonPromotionQuantity(product, requestedQuantity);
-
-
         if (shouldAdjustQuantity(isIncludeNormalStock, nonPromotionQuantity)) {
             adjustPurchaseItemQuantity(item, requestedQuantity, nonPromotionQuantity);
         }
