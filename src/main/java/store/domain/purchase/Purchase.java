@@ -12,6 +12,7 @@ import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.promotion.Promotion;
 import store.domain.purchase.dto.PurchaseDto;
+import store.domain.purchase.dto.PurchaseGiftDto;
 import store.domain.purchase.dto.PurchaseItemDto;
 
 public class Purchase {
@@ -34,16 +35,54 @@ public class Purchase {
         return new Purchase(items);
     }
 
-    // 총 구매금액, 총 구매수량 설정하기
-    public void calculatePurchaseInfo(Products products, LocalDate localDate) {
+    // 필드값 설정하는 메서드. totalPrice, totalQuantity, discount, purchaseGifts 설정
+    public void calculatePurchaseInfo(Products products, LocalDate localDate, boolean isContinue) {
         for (PurchaseItem item : items) {
-            Product product = findProduct(products, item);
-            int quantity = item.getQuantity();
+            int purchaseQuantity = item.getQuantity();
+            Product product = products.findProductByName(item.getName());
+            decreaseStock(localDate, isContinue, product, purchaseQuantity);
             int price = product.getPrice();
-            totalPrice += price * quantity;
-            totalQuantity += quantity;
-            checkAndApplyPromotion(localDate, item, product, quantity, price);
+            totalPrice += price * purchaseQuantity;
+            totalQuantity += purchaseQuantity;
+            checkAndApplyPromotion(localDate, item, product, purchaseQuantity, price);
         }
+    }
+
+    public List<PurchaseItemDto> getItemsAsDTO(Products products) {
+        return items.stream()
+                .map(item -> {
+                    Product product = products.findProductByName(item.getName());
+                    int price = product.getPrice();
+                    return PurchaseItemDto.of(item.getName(), price, item.getQuantity());
+                })
+                .collect(Collectors.toList());
+    }
+
+    List<PurchaseGiftDto> giftDtos = Optional.ofNullable(purchaseGifts)
+            .map(gifts -> gifts.getGifts().stream()
+                    .map(PurchaseGift::toDto)
+                    .collect(Collectors.toList()))
+            .orElse(Collections.emptyList());
+
+    public PurchaseDto toDto(Products products) {
+        int finalAmount = totalPrice - discount.getPromotionAmount() - discount.getMembershipAmount();
+        return new PurchaseDto(
+                getItemsAsDTO(products),
+                giftDtos,
+                totalPrice,
+                totalQuantity,
+                discount.getPromotionAmount(),
+                discount.getMembershipAmount(),
+                finalAmount
+        );
+    }
+
+    private void decreaseStock(LocalDate localDate, boolean isContinue, Product product, int purchaseQuantity) {
+        if (product.hasPromotion() && product.isPromotionDate(localDate)) {
+            product.notEnoughPromotionProduct(purchaseQuantity, isContinue);
+            return;
+        }
+        product.purchaseNormalProduct(purchaseQuantity);
     }
 
     private void checkAndApplyPromotion(LocalDate localDate, PurchaseItem item, Product product, int quantity,
@@ -64,7 +103,7 @@ public class Purchase {
         discount.addPromotionAmount(freeQuantity * price);
         purchaseGifts.addGift(PurchaseGift.of(item.getName(), freeQuantity));
     }
-
+    ////////////////////////////////////////// 리팩토링 구분자
     private int calculateFreeItems(int quantity, Promotion promotion) {
         int requiredBuyQuantity = promotion.getBuy();
         int freeQuantity = promotion.getGet();
@@ -72,28 +111,6 @@ public class Purchase {
         // 구매 수량을 기준으로 프로모션 혜택 수량 계산
         int applicableTimes = quantity / (requiredBuyQuantity + freeQuantity);
         return applicableTimes * freeQuantity;
-    }
-
-    public PurchaseDto toDto(Products products) {
-        List<PurchaseItemDto> purchaseItemDtos = items.stream()
-                .map(item -> {
-                    Product product = findProduct(products, item);
-                    return PurchaseItemDto.from(item.getName(), product.getPrice(), item.getQuantity());
-                })
-                .collect(Collectors.toList());
-
-        int promotionDiscount = discount.getPromotionAmount();
-        int membershipDiscount = discount.getMembershipAmount();
-        int finalAmount = totalPrice - promotionDiscount - membershipDiscount;
-
-        return PurchaseDto.from(
-                purchaseItemDtos,
-                totalPrice,
-                totalQuantity,
-                promotionDiscount,
-                membershipDiscount,
-                finalAmount
-        );
     }
 
     public PurchaseGifts getPurchaseGifts() {
@@ -104,33 +121,9 @@ public class Purchase {
         discount.addPromotionAmount(price);
     }
 
-
     private void buyProduct(LocalDate localDate, PurchaseItem item, Product product) {
         validatePurchaseQuantity(item.getQuantity(), product.getTotalStock());
         product.buy(item.getQuantity(), localDate);
-    }
-
-    private Product findProduct(Products products, PurchaseItem item) {
-        List<Product> matchedProducts = products.findProductByName(item.getName());
-        return matchedProducts.get(0);
-    }
-
-    public Optional<PurchaseItem> findItemByName(String name) {
-        return items.stream()
-                .filter(purchaseItem -> purchaseItem.getName().equals(name))
-                .findFirst();
-    }
-
-    public List<PurchaseItem> getItems() {
-        return Collections.unmodifiableList(items);
-    }
-
-    public int getTotalQuantity() {
-        return totalQuantity;
-    }
-
-    public int getTotalPrice() {
-        return totalPrice;
     }
 
     private void validatePurchaseQuantity(int purchaseQuantity, int totalStock) {

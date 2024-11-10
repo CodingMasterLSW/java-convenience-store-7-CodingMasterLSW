@@ -3,10 +3,7 @@ package store.service;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Optional;
 import store.domain.purchase.Purchase;
-import store.domain.purchase.PurchaseAlert;
-import store.domain.purchase.PurchaseGifts;
 import store.domain.purchase.PurchaseItem;
 import store.domain.product.Product;
 import store.domain.product.Products;
@@ -31,16 +28,18 @@ public class PurchaseService {
         return purchaseItems;
     }
 
+    public PurchaseDto purchase(LocalDate currentDate, boolean isContinue) {
+        purchase.calculatePurchaseInfo(products, currentDate, isContinue);
+        return purchase.toDto(products);
+    }
 
+/*
     public boolean isPromotionApplicable(PurchaseItem item, LocalDate date) {
         Product product = findProduct(products, item);
         return product.getPromotion() != null && product.isPromotionDate(date);
     }
 
-    public PurchaseDto purchaseInfo(LocalDate currentDate) {
-        purchase.calculatePurchaseInfo(products, currentDate);
-        return purchase.toDto(products);
-    }
+
 
     public void addPurchaseItemStock(PurchaseAlert purchaseAlert) {
         Optional<PurchaseItem> purchaseItem = purchase.findItemByName(purchaseAlert.getItemName());
@@ -66,15 +65,8 @@ public class PurchaseService {
         return Optional.empty();
     }
 
-    public boolean checkPromotionAndHandlePurchase(PurchaseItem item, boolean useNormalStockIfNeeded) {
-        Product product = findProduct(products, item);
-        return product.checkAndBuyWithPromotion(item.getQuantity(), useNormalStockIfNeeded);
-    }
 
-    private Product findProduct(Products products, PurchaseItem item) {
-        List<Product> matchedProducts = products.findProductByName(item.getName());
-        return matchedProducts.get(0);
-    }
+ */
 
     public List<ProductDto> getProductDtos() {
         List<ProductDto> productDtos = new ArrayList<>();
@@ -92,11 +84,13 @@ public class PurchaseService {
             productDtos.add(product.toNormalDto());
         }
     }
-
+/*
     public Product findProduct(PurchaseItem item) {
         List<Product> matchedProducts = products.findProductByName(item.getName());
         return matchedProducts.get(0);
     }
 
+
+ */
 
 }

@@ -13,7 +13,7 @@ public class PurchaseItemDto {
         this.quantity = quantity;
     }
 
-    public static PurchaseItemDto from(String productName, int price, int quantity) {
+    public static PurchaseItemDto of(String productName, int price, int quantity) {
         return new PurchaseItemDto(productName, price, quantity);
     }
 

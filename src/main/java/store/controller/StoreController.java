@@ -2,11 +2,6 @@ package store.controller;
 
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.List;
-import java.util.Optional;
-import store.domain.product.Product;
-import store.domain.promotion.Promotion;
-import store.domain.purchase.PurchaseAlert;
-import store.domain.purchase.PurchaseGifts;
 import store.domain.purchase.PurchaseItem;
 import store.domain.purchase.dto.PurchaseDto;
 import store.service.PurchaseService;
@@ -40,8 +35,10 @@ public class StoreController {
 
             // 구매를 진행한다. 입력을 받고, 입력 아이템을 출력함.
             List<PurchaseItem> purchaseItems = purchaseItems();
-
             // 입력 아이템을 구매한다.
+            PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(), true);
+            outputView.printPurchaseInfo(purchaseDto.getItems());
+            outputView.printReceiptInfo(purchaseDto);
             //
 
             // 종료 메서드

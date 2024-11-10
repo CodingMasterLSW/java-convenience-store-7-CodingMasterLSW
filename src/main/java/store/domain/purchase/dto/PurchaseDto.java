@@ -1,19 +1,19 @@
 package store.domain.purchase.dto;
 
-import java.util.Collections;
 import java.util.List;
 
 public class PurchaseDto {
+    private List<PurchaseItemDto> items;  // 구매한 상품 리스트
+    private List<PurchaseGiftDto> gifts;  // 증정품 리스트
+    private int totalPrice;               // 총 구매액
+    private int totalQuantity;            // 총 구매 수량
+    private int promotionDiscount;        // 행사 할인 금액
+    private int membershipDiscount;       // 멤버십 할인 금액
+    private int finalAmount;              // 내실 돈 (최종 결제 금액)
 
-    private final List<PurchaseItemDto> purchaseItemDtos;
-    private final int totalPrice;
-    private final int totalQuantity;
-    private final int promotionDiscount;
-    private final int membershipDiscount;
-    private final int finalAmount;
-
-    private PurchaseDto(List<PurchaseItemDto> purchaseItemDtos, int totalPrice, int totalQuantity, int promotionDiscount, int membershipDiscount, int finalAmount) {
-        this.purchaseItemDtos = purchaseItemDtos;
+    public PurchaseDto(List<PurchaseItemDto> items, List<PurchaseGiftDto> gifts, int totalPrice, int totalQuantity, int promotionDiscount, int membershipDiscount, int finalAmount) {
+        this.items = items;
+        this.gifts = gifts;
         this.totalPrice = totalPrice;
         this.totalQuantity = totalQuantity;
         this.promotionDiscount = promotionDiscount;
@@ -21,12 +21,13 @@ public class PurchaseDto {
         this.finalAmount = finalAmount;
     }
 
-    public static PurchaseDto from(List<PurchaseItemDto> purchaseItemDtos, int totalPrice, int totalQuantity, int promotionDiscount, int membershipDiscount, int finalAmount) {
-        return new PurchaseDto(purchaseItemDtos, totalPrice, totalQuantity, promotionDiscount, membershipDiscount, finalAmount);
+    // Getters
+    public List<PurchaseItemDto> getItems() {
+        return items;
     }
 
-    public List<PurchaseItemDto> getPurchaseItemDtos() {
-        return Collections.unmodifiableList(purchaseItemDtos);
+    public List<PurchaseGiftDto> getGifts() {
+        return gifts;
     }
 
     public int getTotalPrice() {

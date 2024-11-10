@@ -3,6 +3,7 @@ package store.domain.purchase;
 import static store.exception.ErrorMessage.MINIMUM_PURCHASE_AMOUNT;
 
 import java.util.Objects;
+import store.domain.purchase.dto.PurchaseItemDto;
 
 public class PurchaseItem {
 
@@ -23,6 +24,10 @@ public class PurchaseItem {
         if (quantity <= 0) {
             throw new IllegalArgumentException(MINIMUM_PURCHASE_AMOUNT.getMessage());
         }
+    }
+
+    public PurchaseItemDto toDto(String name, int quantity, int price) {
+        return PurchaseItemDto.of(name, quantity, price);
     }
 
     public void addQuantity(int quantity) {

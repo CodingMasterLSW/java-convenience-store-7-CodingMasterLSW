@@ -1,5 +1,7 @@
 package store.domain.purchase;
 
+import store.domain.purchase.dto.PurchaseGiftDto;
+
 public class PurchaseGift {
 
     private final String name;
@@ -20,5 +22,9 @@ public class PurchaseGift {
 
     public int getQuantity() {
         return quantity;
+    }
+
+    public PurchaseGiftDto toDto() {
+        return PurchaseGiftDto.of(name, quantity);
     }
 }

@@ -1,8 +1,9 @@
 package store.domain.product;
 
+import static store.exception.ErrorMessage.NOT_EXIST_PRODUCT;
+
 import java.util.Collections;
 import java.util.List;
-import java.util.stream.Collectors;
 
 public class Products {
 
@@ -20,10 +21,11 @@ public class Products {
         return Collections.unmodifiableList(products);
     }
 
-    public List<Product> findProductByName(String name) {
+    public Product findProductByName(String name) {
         return products.stream()
                 .filter(product -> product.getName().equals(name))
-                .collect(Collectors.toList());
+                .findFirst()
+                .orElseThrow(() -> new IllegalArgumentException(NOT_EXIST_PRODUCT.getMessage()));
     }
 
     public boolean isExist(String name) {
