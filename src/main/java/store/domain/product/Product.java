@@ -41,6 +41,30 @@ public class Product {
         return promotion != null;
     }
 
+    public void notEnoughPromotionProduct(int quantity, boolean continuePurchase) {
+        if (stock.isEnoughPromotion(quantity)) {
+            handleInsufficientPromotionStock(quantity, continuePurchase);
+        }
+    }
+
+    private void handleInsufficientPromotionStock(int quantity, boolean continuePurchase) {
+        if (continuePurchase) {
+            stock.handlePromotionStock(quantity);
+            return;
+        }
+        stock.decreasePromotion(stock.getPromotion());
+    }
+
+    public void purchaseNormalProduct(int quantity) {
+        stock.decreaseNormal(quantity);
+    }
+
+    public void purchasePromotionProduct(int quantity) {
+        stock.decreasePromotion(quantity);
+    }
+
+
+
     public boolean checkAndBuyWithPromotion(int quantity, boolean useNormalStockIfNeeded) {
         if (promotion == null || !promotion.isDate(DateTimes.now().toLocalDate())) {
             stock.decreaseNormal(quantity);
