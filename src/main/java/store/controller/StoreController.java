@@ -2,7 +2,7 @@ package store.controller;
 
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.List;
-import store.domain.purchase.PurchaseItem;
+import store.domain.purchase.PurchaseAlert;
 import store.domain.purchase.dto.PromotionStockDto;
 import store.domain.purchase.dto.PurchaseDto;
 import store.service.PurchaseService;
@@ -31,18 +31,12 @@ public class StoreController {
     public void start() {
         while (true) {
             showCurrentProduct();
-            // 구매를 진행한다. 입력을 받고, 입력 아이템을 출력함.
-            List<PurchaseItem> purchaseItems = purchaseItems();
-            // purchaseAlert가 존재한다면 입력받기
-
-            // ProductPromotionStock < purchaseAMount 일 경우, 입력받기
+            purchaseItems();
+            processPurchaseAlerts();
             boolean isEnoughStock = checkAndPromptPromotionStock();
-            // 입력 아이템을 구매한다.
             PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(),
                     isEnoughStock);
-            // 출력
             displayPurchaseResult(purchaseDto);
-            // 종료 메서드
             if (isEnd()) {
                 break;
             }
@@ -63,9 +57,9 @@ public class StoreController {
         outputView.printReceiptInfo(purchaseDto);
     }
 
-    private List<PurchaseItem> purchaseItems() {
+    private void purchaseItems() {
         String userInput = inputView.purchaseInput();
-        return purchaseService.initializePurchase(userInput);
+        purchaseService.initializePurchase(userInput);
     }
 
     private boolean checkAndPromptPromotionStock() {
@@ -87,5 +81,21 @@ public class StoreController {
             return true;
         }
         return false;
+    }
+
+    private void processPurchaseAlerts() {
+        List<PurchaseAlert> alerts = purchaseService.generatePurchaseAlerts();
+        for (PurchaseAlert alert : alerts) {
+            handleGiftAlert(alert);
+        }
+    }
+
+    private void handleGiftAlert(PurchaseAlert alert) {
+        if (alert.isApplicable()) {
+            String userInput = inputView.freeAlertInput(alert);
+            if (userInput.equalsIgnoreCase("Y")) {
+                purchaseService.applyGiftIfApplicable(alert);
+            }
+        }
     }
 }

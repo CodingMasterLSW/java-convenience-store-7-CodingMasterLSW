@@ -46,8 +46,14 @@ public class Purchase {
     private void processPurchaseItem(Products products, PurchaseItem item, LocalDate localDate,
             boolean isIncludeNormalStock) {
         Product product = products.findProductByName(item.getName());
+
+        // 현재 구매하려는 수량
         int requestedQuantity = item.getQuantity();
+
+        // 프로모션이 적용되지 않는 수량
         int nonPromotionQuantity = calculateNonPromotionQuantity(product, requestedQuantity);
+
+
         if (shouldAdjustQuantity(isIncludeNormalStock, nonPromotionQuantity)) {
             adjustPurchaseItemQuantity(item, requestedQuantity, nonPromotionQuantity);
         }
@@ -68,6 +74,7 @@ public class Purchase {
 
     private void adjustPurchaseItemQuantity(PurchaseItem item, int requestedQuantity,
             int nonPromotionQuantity) {
+        // 실제 사용자가 얻을 수 있는 프로모션 재고 수량
         int promotionApplicableQuantity = requestedQuantity - nonPromotionQuantity;
         item.setQuantity(promotionApplicableQuantity);
     }
@@ -149,6 +156,10 @@ public class Purchase {
                 .collect(Collectors.toList());
     }
 
+    public List<PurchaseItem> getItems() {
+        return Collections.unmodifiableList(items);
+    }
+
     public List<PurchaseGiftDto> getGiftsAsDto(PurchaseGifts purchaseGifts) {
         return Optional.ofNullable(purchaseGifts)
                 .map(gifts -> gifts.getGifts().stream()
@@ -180,47 +191,13 @@ public class Purchase {
         product.purchaseNormalProduct(purchaseQuantity);
     }
 
-    private void checkAndApplyPromotion(LocalDate localDate, PurchaseItem item, Product product,
-            int quantity,
-            int price) {
-        if (product.hasPromotion() && product.isPromotionDate(localDate)) {
-            Promotion promotion = product.getPromotion();
-            applyPromotionDiscounts(item, promotion, quantity, price);
-        }
-    }
-
-    private void applyPromotionDiscounts(PurchaseItem item, Promotion promotion, int quantity,
-            int price) {
-        int requiredQuantityPerSet = promotion.getBuy();
-        int freeQuantityPerSet = promotion.getGet();
-        int totalPromoUnits = requiredQuantityPerSet + freeQuantityPerSet;
-        int applicableSets = quantity / totalPromoUnits;
-        int freeQuantity = applicableSets * freeQuantityPerSet;
-        int remainingQuantity = quantity % totalPromoUnits;
-        finalizePromotionDiscounts(item, price, remainingQuantity, requiredQuantityPerSet,
-                freeQuantity,
-                freeQuantityPerSet);
-    }
-
-    private void finalizePromotionDiscounts(PurchaseItem item, int price, int remainingQuantity,
-            int requiredQuantityPerSet, int freeQuantity, int freeQuantityPerSet) {
-        if (remainingQuantity >= requiredQuantityPerSet) {
-            freeQuantity += freeQuantityPerSet;
-        }
-        discount.addPromotionAmount(freeQuantity * price);
-        if (freeQuantity > 0) {
-            purchaseGifts.addGift(PurchaseGift.of(item.getName(), freeQuantity));
-        }
-    }
-
     private void validatePurchaseQuantity(int purchaseQuantity, int totalStock) {
         if (purchaseQuantity > totalStock) {
             throw new IllegalArgumentException(OVER_STOCK_PURCHASE.getMessage());
         }
     }
 
-/*
-    ////////////////////////////////////////// 리팩토링 구분자
+
     private int calculateFreeItems(int quantity, Promotion promotion) {
         int requiredBuyQuantity = promotion.getBuy();
         int freeQuantity = promotion.getGet();
@@ -243,6 +220,11 @@ public class Purchase {
         product.buy(item.getQuantity(), localDate);
     }
 
+    public void addGift(int freeQuantity, String itemName) {
+        if (freeQuantity > 0) {
+            // PurchaseGifts 객체에 새로운 증정품을 추가
+            purchaseGifts.addGift(PurchaseGift.of(itemName, freeQuantity));
+        }
+    }
 
- */
 }
