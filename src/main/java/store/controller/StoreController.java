@@ -2,6 +2,7 @@ package store.controller;
 
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.List;
+import store.domain.Membership;
 import store.domain.purchase.PurchaseAlert;
 import store.domain.purchase.dto.PromotionStockDto;
 import store.domain.purchase.dto.PurchaseDto;
@@ -34,9 +35,11 @@ public class StoreController {
             purchaseItems();
             processPurchaseAlerts();
             boolean isEnoughStock = checkAndPromptPromotionStock();
+            boolean isMembershipApplied = handleMembershipInput();
 
             PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(),
-                    isEnoughStock);
+                    isEnoughStock, isMembershipApplied);
+
             displayPurchaseResult(purchaseDto);
             if (isEnd()) {
                 break;
@@ -99,4 +102,13 @@ public class StoreController {
             }
         }
     }
+
+    private boolean handleMembershipInput () {
+        String userInput = inputView.promptMembershipDiscount();
+        if (userInput.equalsIgnoreCase("Y")) {
+            return true;
+        }
+        return false;
+    }
+
 }

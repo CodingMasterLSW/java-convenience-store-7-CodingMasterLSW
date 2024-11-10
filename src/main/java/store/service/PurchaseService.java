@@ -31,8 +31,11 @@ public class PurchaseService {
         return purchaseItems;
     }
 
-    public PurchaseDto purchase(LocalDate currentDate, boolean isContinue) {
+    public PurchaseDto purchase(LocalDate currentDate, boolean isContinue, boolean isMembershipApplied) {
         purchase.calculatePurchaseInfo(products, currentDate, isContinue);
+        if (isMembershipApplied) {
+            purchase.applyMembershipDiscount(products);
+        }
         return purchase.toDto(products);
     }
 
@@ -56,10 +59,6 @@ public class PurchaseService {
         return alerts;
     }
 
-    public void addGift(PurchaseAlert alert) {
-        purchase.addGift(alert.getFreeQuantity(), alert.getItemName());
-    }
-
     public void applyGiftIfApplicable(PurchaseAlert alert) {
         // 증정 조건이 충족되면 PurchaseItem에 증정 수량 추가
         PurchaseItem item = findItemByName(alert.getItemName());
@@ -74,41 +73,6 @@ public class PurchaseService {
                 .findFirst()
                 .orElse(null); // 찾지 못한 경우 null 반환 (필요에 따라 예외 처리 가능)
     }
-
-/*
-    public boolean isPromotionApplicable(PurchaseItem item, LocalDate date) {
-        Product product = findProduct(products, item);
-        return product.getPromotion() != null && product.isPromotionDate(date);
-    }
-
-
-
-    public void addPurchaseItemStock(PurchaseAlert purchaseAlert) {
-        Optional<PurchaseItem> purchaseItem = purchase.findItemByName(purchaseAlert.getItemName());
-        purchaseItem.get().addQuantity(purchaseAlert.getFreeQuantity());
-    }
-
-    public PurchaseGifts getPurchaseGifts() {
-        return purchase.getPurchaseGifts();
-    }
-
-    public Optional<PurchaseAlert> canAddFreeProduct(List<PurchaseItem> purchaseItems,
-            LocalDate currentDate) {
-        for (PurchaseItem purchaseItem : purchaseItems) {
-            Product product = findProduct(products, purchaseItem);
-            if (product.getPromotion() == null || !product.isPromotionDate(currentDate)) {
-                continue;
-            }
-            PurchaseAlert purchaseAlert = PurchaseAlert.of(purchaseItem.getName(),
-                    product.getPromotion(),
-                    purchaseItem.getQuantity());
-            return Optional.of(purchaseAlert);
-        }
-        return Optional.empty();
-    }
-
-
- */
 
     public List<ProductDto> getProductDtos() {
         List<ProductDto> productDtos = new ArrayList<>();
@@ -126,13 +90,5 @@ public class PurchaseService {
             productDtos.add(product.toNormalDto());
         }
     }
-/*
-    public Product findProduct(PurchaseItem item) {
-        List<Product> matchedProducts = products.findProductByName(item.getName());
-        return matchedProducts.get(0);
-    }
-
-
- */
 
 }

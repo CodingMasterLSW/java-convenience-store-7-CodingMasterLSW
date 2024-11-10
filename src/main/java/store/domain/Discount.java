@@ -3,11 +3,11 @@ package store.domain;
 public class Discount {
 
     private int promotionAmount;
-    private int membershipAmount;
+    private Membership membership;
 
     private Discount() {
         this.promotionAmount = 0;
-        this.membershipAmount = 0;
+        this.membership = Membership.create();
     }
 
     public static Discount create() {
@@ -23,10 +23,14 @@ public class Discount {
     }
 
     public int getMembershipAmount() {
-        return membershipAmount;
+        return membership.getCurrentDiscount();
+    }
+
+    public int applyMembership(int amount) {
+        return membership.apply(amount);
     }
 
     public int getTotalAmount() {
-        return promotionAmount + membershipAmount;
+        return promotionAmount + membership.getCurrentDiscount();
     }
 }

@@ -43,6 +43,22 @@ public class Purchase {
         }
     }
 
+    public void applyMembershipDiscount(Products products) {
+        int amountForMembershipDiscount = calculateAmountAfterPromotion(products);
+        discount.applyMembership(amountForMembershipDiscount);
+    }
+
+    private int calculateAmountAfterPromotion(Products products) {
+        int amount = 0;
+        for (PurchaseItem item : items) {
+            if (!item.isPromotionApplied()) {
+                Product product = products.findProductByName(item.getName());
+                amount += item.getQuantity() * product.getPrice();
+            }
+        }
+        return amount;
+    }
+
     private void processPurchaseItem(Products products, PurchaseItem item, LocalDate localDate,
             boolean isIncludeNormalStock) {
         Product product = products.findProductByName(item.getName());
@@ -55,7 +71,7 @@ public class Purchase {
         int promotionApplicableQuantity = handleStockDeduction(product, purchaseQuantity,
                 isIncludeNormalStock, localDate);
         updateTotals(purchaseQuantity, product.getPrice());
-        applyPromotionDiscounts(product, promotionApplicableQuantity);
+        applyPromotionDiscounts(product, item, promotionApplicableQuantity);
     }
 
     private int calculateNonPromotionQuantity(Product product, int purchaseQuantity) {
@@ -109,13 +125,14 @@ public class Purchase {
         totalQuantity += purchaseQuantity;
     }
 
-    private void applyPromotionDiscounts(Product product, int promotionApplicableQuantity) {
+    private void applyPromotionDiscounts(Product product, PurchaseItem item, int promotionApplicableQuantity) {
         if (promotionApplicableQuantity > 0) {
             Promotion promotion = product.getPromotion();
             int freeQuantity = calculateFreeQuantity(promotion, promotionApplicableQuantity);
             discount.addPromotionAmount(freeQuantity * product.getPrice());
             if (freeQuantity > 0) {
                 purchaseGifts.addGift(PurchaseGift.of(product.getName(), freeQuantity));
+                item.changePromotionStatus();
             }
         }
     }
@@ -176,6 +193,10 @@ public class Purchase {
         );
     }
 
+    public Discount getDiscount() {
+        return discount;
+    }
+
     private void decreaseStock(LocalDate localDate, boolean isContinue, Product product,
             int purchaseQuantity) {
         if (product.hasPromotion() && product.isPromotionDate(localDate)) {
@@ -199,6 +220,10 @@ public class Purchase {
         // 구매 수량을 기준으로 프로모션 혜택 수량 계산
         int applicableTimes = quantity / (requiredBuyQuantity + freeQuantity);
         return applicableTimes * freeQuantity;
+    }
+
+    public int getTotalPrice() {
+        return totalPrice;
     }
 
     public PurchaseGifts getPurchaseGifts() {

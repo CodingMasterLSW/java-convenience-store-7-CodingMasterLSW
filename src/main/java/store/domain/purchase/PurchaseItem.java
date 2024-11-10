@@ -9,11 +9,13 @@ public class PurchaseItem {
 
     private final String name;
     private int quantity;
+    private boolean promotionStatus;
 
     private PurchaseItem(String name, int quantity) {
         validateQuantity(quantity);
         this.name = name;
         this.quantity = quantity;
+        this.promotionStatus = false;
     }
 
     public static PurchaseItem of(String name, int quantity) {
@@ -44,6 +46,14 @@ public class PurchaseItem {
 
     public void setQuantity(int quantity) {
         this.quantity = quantity;
+    }
+
+    public void changePromotionStatus() {
+        this.promotionStatus = true;
+    }
+
+    public boolean isPromotionApplied() {
+        return promotionStatus;
     }
 
     @Override
