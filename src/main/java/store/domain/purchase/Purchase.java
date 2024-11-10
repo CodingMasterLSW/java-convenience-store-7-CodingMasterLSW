@@ -11,6 +11,7 @@ import store.domain.Discount;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.promotion.Promotion;
+import store.domain.purchase.dto.PromotionStockDto;
 import store.domain.purchase.dto.PurchaseDto;
 import store.domain.purchase.dto.PurchaseGiftDto;
 import store.domain.purchase.dto.PurchaseItemDto;
@@ -48,6 +49,18 @@ public class Purchase {
         }
     }
 
+    public PromotionStockDto verifyPromotionStock(Products products) {
+        for (PurchaseItem item : items) {
+            int purchaseQuantity = item.getQuantity();
+            Product product = products.findProductByName(item.getName());
+            int lackPromotionStock = product.hasEnoughPromotionStock(purchaseQuantity);
+            if (lackPromotionStock != 0) {
+                return PromotionStockDto.of(product.getName(), lackPromotionStock);
+            }
+        }
+        return null;
+    }
+
     public List<PurchaseItemDto> getItemsAsDto(Products products) {
         return items.stream()
                 .map(item -> {
@@ -67,7 +80,8 @@ public class Purchase {
     }
 
     public PurchaseDto toDto(Products products) {
-        int finalAmount = totalPrice - discount.getPromotionAmount() - discount.getMembershipAmount();
+        int finalAmount =
+                totalPrice - discount.getPromotionAmount() - discount.getMembershipAmount();
         return new PurchaseDto(
                 getItemsAsDto(products),
                 getGiftsAsDto(purchaseGifts),
@@ -79,7 +93,8 @@ public class Purchase {
         );
     }
 
-    private void decreaseStock(LocalDate localDate, boolean isContinue, Product product, int purchaseQuantity) {
+    private void decreaseStock(LocalDate localDate, boolean isContinue, Product product,
+            int purchaseQuantity) {
         if (product.hasPromotion() && product.isPromotionDate(localDate)) {
             product.notEnoughPromotionProduct(purchaseQuantity, isContinue);
             return;
@@ -87,7 +102,8 @@ public class Purchase {
         product.purchaseNormalProduct(purchaseQuantity);
     }
 
-    private void checkAndApplyPromotion(LocalDate localDate, PurchaseItem item, Product product, int quantity,
+    private void checkAndApplyPromotion(LocalDate localDate, PurchaseItem item, Product product,
+            int quantity,
             int price) {
         if (product.hasPromotion() && product.isPromotionDate(localDate)) {
             Promotion promotion = product.getPromotion();
@@ -95,14 +111,16 @@ public class Purchase {
         }
     }
 
-    private void applyPromotionDiscounts(PurchaseItem item, Promotion promotion, int quantity, int price) {
+    private void applyPromotionDiscounts(PurchaseItem item, Promotion promotion, int quantity,
+            int price) {
         int requiredQuantityPerSet = promotion.getBuy();
         int freeQuantityPerSet = promotion.getGet();
         int totalPromoUnits = requiredQuantityPerSet + freeQuantityPerSet;
         int applicableSets = quantity / totalPromoUnits;
         int freeQuantity = applicableSets * freeQuantityPerSet;
         int remainingQuantity = quantity % totalPromoUnits;
-        finalizePromotionDiscounts(item, price, remainingQuantity, requiredQuantityPerSet, freeQuantity,
+        finalizePromotionDiscounts(item, price, remainingQuantity, requiredQuantityPerSet,
+                freeQuantity,
                 freeQuantityPerSet);
     }
 
@@ -117,6 +135,13 @@ public class Purchase {
         }
     }
 
+    private void validatePurchaseQuantity(int purchaseQuantity, int totalStock) {
+        if (purchaseQuantity > totalStock) {
+            throw new IllegalArgumentException(OVER_STOCK_PURCHASE.getMessage());
+        }
+    }
+
+/*
     ////////////////////////////////////////// 리팩토링 구분자
     private int calculateFreeItems(int quantity, Promotion promotion) {
         int requiredBuyQuantity = promotion.getBuy();
@@ -140,10 +165,6 @@ public class Purchase {
         product.buy(item.getQuantity(), localDate);
     }
 
-    private void validatePurchaseQuantity(int purchaseQuantity, int totalStock) {
-        if (purchaseQuantity > totalStock) {
-            throw new IllegalArgumentException(OVER_STOCK_PURCHASE.getMessage());
-        }
-    }
-}
 
+ */
+}

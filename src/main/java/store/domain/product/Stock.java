@@ -25,7 +25,7 @@ public class Stock {
         promotion -= quantity;
     }
 
-    public boolean isEnoughPromotion(int quantity) {
+    public boolean lackOfPromotionStock(int quantity) {
         return promotion >= quantity;
     }
 
@@ -37,6 +37,9 @@ public class Stock {
             return;
         }
         decreasePromotion(quantity);
+    }
+    public boolean hasPromotionStock() {
+        return promotion > 0;
     }
 
     public void validateInitQuantity(int normalQuantity, int promotionQuantity) {

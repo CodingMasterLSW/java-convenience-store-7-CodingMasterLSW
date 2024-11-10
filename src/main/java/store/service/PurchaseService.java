@@ -8,6 +8,7 @@ import store.domain.purchase.PurchaseItem;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.product.dto.ProductDto;
+import store.domain.purchase.dto.PromotionStockDto;
 import store.domain.purchase.dto.PurchaseDto;
 import store.utils.InputParser;
 
@@ -31,6 +32,10 @@ public class PurchaseService {
     public PurchaseDto purchase(LocalDate currentDate, boolean isContinue) {
         purchase.calculatePurchaseInfo(products, currentDate, isContinue);
         return purchase.toDto(products);
+    }
+
+    public PromotionStockDto checkPromotionStock() {
+        return purchase.verifyPromotionStock(products);
     }
 
 /*

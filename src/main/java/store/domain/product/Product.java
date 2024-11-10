@@ -41,8 +41,27 @@ public class Product {
         return promotion != null;
     }
 
+    public int hasEnoughPromotionStock(int purchaseQuantity) {
+        if (!hasPromotion() || !stock.hasPromotionStock()) {
+            return 0;
+        }
+        return calculateLackPromotionStock(purchaseQuantity);
+    }
+
+    private int calculateLackPromotionStock(int purchaseQuantity) {
+        int requiredBuyQuantity = promotion.getBuy();
+        int freeQuantity = promotion.getGet();
+        int totalPromoUnits = requiredBuyQuantity + freeQuantity;
+        int maxSetsFromPromotionStock = stock.getPromotion() / totalPromoUnits;
+        int maxSetsFromRequestedQuantity = purchaseQuantity / totalPromoUnits;
+        int applicableSets = Math.min(maxSetsFromPromotionStock, maxSetsFromRequestedQuantity);
+        int promotionApplicableQuantity = applicableSets * totalPromoUnits;
+        int remainingQuantity = purchaseQuantity - promotionApplicableQuantity;
+        return remainingQuantity;
+    }
+
     public void notEnoughPromotionProduct(int quantity, boolean continuePurchase) {
-        if (stock.isEnoughPromotion(quantity)) {
+        if (stock.lackOfPromotionStock(quantity)) {
             handleInsufficientPromotionStock(quantity, continuePurchase);
         }
     }
