@@ -38,6 +38,7 @@ public class StoreController {
             // 입력 아이템을 구매한다.
             PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(), true);
             outputView.printPurchaseInfo(purchaseDto.getItems());
+            outputView.printGive(purchaseDto.getGifts());
             outputView.printReceiptInfo(purchaseDto);
             //
 

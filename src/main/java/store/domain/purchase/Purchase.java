@@ -48,7 +48,7 @@ public class Purchase {
         }
     }
 
-    public List<PurchaseItemDto> getItemsAsDTO(Products products) {
+    public List<PurchaseItemDto> getItemsAsDto(Products products) {
         return items.stream()
                 .map(item -> {
                     Product product = products.findProductByName(item.getName());
@@ -58,17 +58,19 @@ public class Purchase {
                 .collect(Collectors.toList());
     }
 
-    List<PurchaseGiftDto> giftDtos = Optional.ofNullable(purchaseGifts)
-            .map(gifts -> gifts.getGifts().stream()
-                    .map(PurchaseGift::toDto)
-                    .collect(Collectors.toList()))
-            .orElse(Collections.emptyList());
+    public List<PurchaseGiftDto> getGiftsAsDto(PurchaseGifts purchaseGifts) {
+        return Optional.ofNullable(purchaseGifts)
+                .map(gifts -> gifts.getGifts().stream()
+                        .map(PurchaseGift::toDto)
+                        .collect(Collectors.toList()))
+                .orElse(Collections.emptyList());
+    }
 
     public PurchaseDto toDto(Products products) {
         int finalAmount = totalPrice - discount.getPromotionAmount() - discount.getMembershipAmount();
         return new PurchaseDto(
-                getItemsAsDTO(products),
-                giftDtos,
+                getItemsAsDto(products),
+                getGiftsAsDto(purchaseGifts),
                 totalPrice,
                 totalQuantity,
                 discount.getPromotionAmount(),
@@ -96,13 +98,25 @@ public class Purchase {
     private void applyPromotionDiscounts(PurchaseItem item, Promotion promotion, int quantity, int price) {
         int requiredQuantityPerSet = promotion.getBuy();
         int freeQuantityPerSet = promotion.getGet();
-
-        int applicableSets = quantity / requiredQuantityPerSet;
+        int totalPromoUnits = requiredQuantityPerSet + freeQuantityPerSet;
+        int applicableSets = quantity / totalPromoUnits;
         int freeQuantity = applicableSets * freeQuantityPerSet;
-
-        discount.addPromotionAmount(freeQuantity * price);
-        purchaseGifts.addGift(PurchaseGift.of(item.getName(), freeQuantity));
+        int remainingQuantity = quantity % totalPromoUnits;
+        finalizePromotionDiscounts(item, price, remainingQuantity, requiredQuantityPerSet, freeQuantity,
+                freeQuantityPerSet);
     }
+
+    private void finalizePromotionDiscounts(PurchaseItem item, int price, int remainingQuantity,
+            int requiredQuantityPerSet, int freeQuantity, int freeQuantityPerSet) {
+        if (remainingQuantity >= requiredQuantityPerSet) {
+            freeQuantity += freeQuantityPerSet;
+        }
+        discount.addPromotionAmount(freeQuantity * price);
+        if (freeQuantity > 0) {
+            purchaseGifts.addGift(PurchaseGift.of(item.getName(), freeQuantity));
+        }
+    }
+
     ////////////////////////////////////////// 리팩토링 구분자
     private int calculateFreeItems(int quantity, Promotion promotion) {
         int requiredBuyQuantity = promotion.getBuy();

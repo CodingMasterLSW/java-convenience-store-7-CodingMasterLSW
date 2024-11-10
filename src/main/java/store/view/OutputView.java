@@ -6,6 +6,7 @@ import store.domain.purchase.PurchaseAlert;
 import store.domain.purchase.PurchaseGift;
 import store.domain.purchase.PurchaseGifts;
 import store.domain.purchase.dto.PurchaseDto;
+import store.domain.purchase.dto.PurchaseGiftDto;
 import store.domain.purchase.dto.PurchaseItemDto;
 
 public class OutputView {
@@ -45,9 +46,9 @@ public class OutputView {
         System.out.printf("현재 %s %d개는 프로모션 할인이 적용되지 않습니다. 그래도 구매하시겠습니까? (Y/N)\n", productName, remainingQuantity);
     }
 
-    public void printGive(PurchaseGifts purchaseGifts) {
+    public void printGive(List<PurchaseGiftDto> purchaseGiftsDtos) {
         printMessage(GIVE_MESSAGE);
-        for (PurchaseGift purchaseGift : purchaseGifts.getGifts()) {
+        for (PurchaseGiftDto purchaseGift : purchaseGiftsDtos) {
             System.out.printf(GIFT_PRODUCT_INFO, purchaseGift.getName(), purchaseGift.getQuantity());
             printMessage(BLANK);
         }
