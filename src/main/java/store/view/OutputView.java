@@ -3,7 +3,8 @@ package store.view;
 import java.util.List;
 import store.domain.product.dto.ProductDto;
 import store.domain.purchase.PurchaseAlert;
-import store.domain.purchase.dto.PurchaseAlertDto;
+import store.domain.purchase.PurchaseGift;
+import store.domain.purchase.PurchaseGifts;
 import store.domain.purchase.dto.PurchaseDto;
 import store.domain.purchase.dto.PurchaseItemDto;
 
@@ -40,9 +41,12 @@ public class OutputView {
         return quantity;
     }
 
-    public void printGive(PurchaseAlertDto purchaseAlertDto) {
+    public void printGive(PurchaseGifts purchaseGifts) {
         printMessage(GIVE_MESSAGE);
-        System.out.printf(GIFT_PRODUCT_INFO, purchaseAlertDto.getProductName(), purchaseAlertDto.getFreeQuantity());
+        for (PurchaseGift purchaseGift : purchaseGifts.getGifts()) {
+            System.out.printf(GIFT_PRODUCT_INFO, purchaseGift.getName(), purchaseGift.getQuantity());
+            printMessage(BLANK);
+        }
         printMessage(BLANK);
     }
 

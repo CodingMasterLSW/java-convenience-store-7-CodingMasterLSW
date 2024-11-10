@@ -20,12 +20,14 @@ public class Purchase {
     private int totalPrice;
     private int totalQuantity;
     private Discount discount;
+    private PurchaseGifts purchaseGifts;
 
     private Purchase(List<PurchaseItem> items) {
         this.items = items;
         totalPrice = 0;
         totalQuantity = 0;
         discount = Discount.create();
+        this.purchaseGifts = PurchaseGifts.create();
     }
 
     public static Purchase from(List<PurchaseItem> items) {
@@ -43,6 +45,7 @@ public class Purchase {
             if (promotion != null && product.isPromotionDate(localDate)) {
                 int freeQuantity = calculateFreeItems(item.getQuantity(), promotion);
                 discount.addPromotionAmount(freeQuantity * product.getPrice());
+                purchaseGifts.addGift(PurchaseGift.of(item.getName(), freeQuantity));
             }
         }
 
@@ -79,6 +82,9 @@ public class Purchase {
         );
     }
 
+    public PurchaseGifts getPurchaseGifts() {
+        return purchaseGifts;
+    }
 
     public void addPromotionDiscount(int price) {
         discount.addPromotionAmount(price);

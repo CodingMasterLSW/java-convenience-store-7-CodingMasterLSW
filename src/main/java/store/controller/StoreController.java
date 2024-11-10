@@ -4,8 +4,8 @@ import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.List;
 import java.util.Optional;
 import store.domain.purchase.PurchaseAlert;
+import store.domain.purchase.PurchaseGifts;
 import store.domain.purchase.PurchaseItem;
-import store.domain.purchase.dto.PurchaseAlertDto;
 import store.domain.purchase.dto.PurchaseDto;
 import store.service.PurchaseService;
 import store.domain.product.dto.ProductDto;
@@ -56,12 +56,9 @@ public class StoreController {
 
             PurchaseDto purchaseDto = purchaseService.purchaseInfo(DateTimes.now().toLocalDate());
             outputView.printPurchaseInfo(purchaseDto.getPurchaseItemDtos());
-
-            if (purchaseAlert.isPresent()) {
-                PurchaseAlertDto dto = purchaseAlert.get().toDto();
-                outputView.printGive(dto);
-            }
-
+            // 여기에 PurchaseGiftDto 출력해야함.
+            PurchaseGifts purchaseGifts = purchaseService.getPurchaseGifts();
+            outputView.printGive(purchaseGifts);
             outputView.printReceiptInfo(purchaseDto);
 
             String decision = inputView.continueInput();

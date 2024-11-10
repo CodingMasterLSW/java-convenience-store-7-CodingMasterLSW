@@ -6,11 +6,11 @@ import java.util.List;
 import java.util.Optional;
 import store.domain.purchase.Purchase;
 import store.domain.purchase.PurchaseAlert;
+import store.domain.purchase.PurchaseGifts;
 import store.domain.purchase.PurchaseItem;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.product.dto.ProductDto;
-import store.domain.purchase.dto.PurchaseAlertDto;
 import store.domain.purchase.dto.PurchaseDto;
 import store.utils.InputParser;
 
@@ -30,13 +30,13 @@ public class PurchaseService {
         return purchaseItems;
     }
 
-    public PurchaseAlertDto convertPurchaseAlertDto(PurchaseAlert purchaseAlert) {
-        return purchaseAlert.toDto();
-    }
-
     public PurchaseDto purchaseInfo(LocalDate currentDate) {
         purchase.calculatePurchaseInfo(products, currentDate);
         return purchase.toDto(products);
+    }
+
+    public PurchaseGifts getPurchaseGifts() {
+        return purchase.getPurchaseGifts();
     }
 
     public void addPurchaseItemStock(PurchaseAlert purchaseAlert) {
