@@ -152,7 +152,7 @@ public class Purchase {
             int purchaseQuantity = item.getQuantity();
             Product product = products.findProductByName(item.getName());
             int lackPromotionStock = product.hasEnoughPromotionStock(purchaseQuantity);
-            if (lackPromotionStock > 0) {
+            if (lackPromotionStock > 0 && product.lackOfPromotion(purchaseQuantity)) {
                 return PromotionStockDto.of(product.getName(), lackPromotionStock);
             }
         }

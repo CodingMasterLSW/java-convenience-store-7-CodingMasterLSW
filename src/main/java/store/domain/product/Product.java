@@ -122,8 +122,6 @@ public class Product {
         return true;
     }
 
-
-
     public void buy(int quantity, LocalDate localDate) {
         if (promotion == null || !promotion.isDate(localDate)) {
             stock.decreaseNormal(quantity);
