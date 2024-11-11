@@ -28,17 +28,20 @@ public class InputView {
     }
 
     public void freeAlertInput(PurchaseAlert purchaseAlert) {
+        printMessage(BLANK);
         System.out.printf(FREE_PRODUCT_INFO, purchaseAlert.getItemName(), purchaseAlert.getFreeQuantity());
         printMessage(BLANK);
     }
 
     public String printInsufficientPromotionStockInfo(String productName, int remainingQuantity) {
+        printMessage(BLANK);
         System.out.printf(LACK_PROMOTION_STOCK_MESSAGE, productName, remainingQuantity);
         printMessage(BLANK);
         return promptYesOrNo();
     }
 
     public void printMembershipMessage() {
+        printMessage(BLANK);
         printMessage(MEMBERSHIP_DISCOUNT_MESSAGE);
     }
 
@@ -61,6 +64,7 @@ public class InputView {
     public String continueInput() {
         String prompt = Console.readLine();
         validatePrompt(prompt);
+        printMessage(BLANK);
         return prompt;
     }
 

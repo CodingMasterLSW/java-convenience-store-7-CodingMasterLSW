@@ -18,7 +18,6 @@ public class OutputView {
     private static final String PURCHASE_DELIMITER = "====================================";
     private static final String GIVE_MESSAGE = "=============증  정===============";
     private static final String GIFT_PRODUCT_INFO = "%s         %,d";
-    private static final String FREE_ITEM_PROMPT_MESSAGE = "현재 %s은(는) %,d개를 무료로 더 받을 수 있습니다. 추가하시겠습니까? (Y/N)";
     private static final String TOTAL_PURCHASE = "총구매액        %,d     %,d";
     private static final String PROMOTION_DISCOUNT = "행사할인              -%,d";
     private static final String MEMBERSHIP_DISCOUNT = "멤버십할인            -%,d";
@@ -49,7 +48,6 @@ public class OutputView {
             System.out.printf(GIFT_PRODUCT_INFO, purchaseGift.getName(), purchaseGift.getQuantity());
             printMessage(BLANK);
         }
-        printMessage(BLANK);
     }
 
     public void printProductMessage() {
@@ -80,6 +78,7 @@ public class OutputView {
     }
 
     public void printPurchaseInfo(List<PurchaseItemDto> purchaseItemDtos) {
+        printMessage(BLANK);
         printMessage(RECEIPT_BANNER);
         printMessage(PURCHASE_SCHEMA);
         for (PurchaseItemDto purchaseItemDto : purchaseItemDtos) {
