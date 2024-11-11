@@ -2,7 +2,7 @@ package store.controller;
 
 import camp.nextstep.edu.missionutils.DateTimes;
 import java.util.List;
-import store.domain.Membership;
+import java.util.function.Supplier;
 import store.domain.purchase.PurchaseAlert;
 import store.domain.purchase.dto.PromotionStockDto;
 import store.domain.purchase.dto.PurchaseDto;
@@ -31,22 +31,17 @@ public class StoreController {
 
     public void start() {
         while (true) {
-            try {
-                showCurrentProduct();
-                purchaseItems();
-                processPurchaseAlerts();
-                boolean isEnoughStock = checkAndPromptPromotionStock();
-                boolean isMembershipApplied = handleMembershipInput();
+            showCurrentProduct();
+            purchaseItems();
+            processPurchaseAlerts();
 
-                PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(),
-                        isEnoughStock, isMembershipApplied);
-
-                displayPurchaseResult(purchaseDto);
-                if (isEnd()) {
-                    break;
-                }
-            } catch (IllegalArgumentException e) {
-                outputView.printErrorMessage(e.getMessage());
+            boolean isEnoughStock = checkAndPromptPromotionStock();
+            boolean isMembershipApplied = handleMembershipInput();
+            PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(),
+                    isEnoughStock, isMembershipApplied);
+            displayPurchaseResult(purchaseDto);
+            if (isEnd()) {
+                break;
             }
         }
     }
@@ -66,44 +61,31 @@ public class StoreController {
     }
 
     private void purchaseItems() {
-        while (true) {
-            try {
-                String userInput = inputView.purchaseInput();
-                purchaseService.initializePurchase(userInput);
-                break;
-            } catch (IllegalArgumentException e) {
-                outputView.printErrorMessage(e.getMessage());
-            }
-        }
+        inputView.printPurchaseMessage();
+        retryOnInvalidInput(() -> {
+            String userInput = inputView.purchaseInput();
+            purchaseService.initializePurchase(userInput);
+            return null;
+        });
     }
 
     private boolean checkAndPromptPromotionStock() {
         PromotionStockDto promotionStockDto = purchaseService.checkPromotionStock();
-        boolean isEnoughStock = true;
-        if (promotionStockDto != null) {
-            while (true) {
-                try {
-                    String userInput = inputView.printInsufficientPromotionStockInfo(
-                            promotionStockDto.getProductName(),
-                            promotionStockDto.getLackPromotionStock());
-                    if (!userInput.equalsIgnoreCase("Y")) {
-                        isEnoughStock = false;
-                    }
-                    break;
-                } catch (IllegalArgumentException e) {
-                    outputView.printErrorMessage(e.getMessage());
-                }
-            }
+        if (promotionStockDto == null) {
+            return true;
         }
-        return isEnoughStock;
+        String userInput = retryOnInvalidInput(() ->
+                    inputView.printInsufficientPromotionStockInfo(
+                            promotionStockDto.getProductName(),
+                            promotionStockDto.getLackPromotionStock())
+        );
+        return userInput.equalsIgnoreCase("Y");
     }
 
     private boolean isEnd() {
-        String decision = inputView.continueInput();
-        if (decision.equalsIgnoreCase("N")) {
-            return true;
-        }
-        return false;
+        inputView.printEndMessage();
+        String userInput = retryOnInvalidInput(() -> inputView.continueInput());
+        return userInput.equalsIgnoreCase("N");
     }
 
     private void processPurchaseAlerts() {
@@ -114,35 +96,29 @@ public class StoreController {
     }
 
     private void handleGiftAlert(PurchaseAlert alert) {
-        while (true) {
-            try {
-                if (alert.isApplicable()) {
-                    String userInput = inputView.freeAlertInput(alert);
-                    if (userInput.equalsIgnoreCase("Y")) {
-                        purchaseService.applyGiftIfApplicable(alert);
-                    }
-                }
-                break;
-            } catch (IllegalArgumentException e) {
-                outputView.printErrorMessage(e.getMessage());
+        if (alert.isApplicable()) {
+            inputView.freeAlertInput(alert);
+            String userInput = retryOnInvalidInput(() -> inputView.promptYesOrNo());
+            if (userInput.equalsIgnoreCase("Y")) {
+                purchaseService.applyGiftIfApplicable(alert);
             }
         }
     }
 
     private boolean handleMembershipInput() {
+        inputView.printMembershipMessage();
+        String userInput = retryOnInvalidInput(() -> inputView.promptYesOrNo());
+        return userInput.equalsIgnoreCase("Y");
+    }
+
+    private <T> T retryOnInvalidInput(Supplier<T> input) {
         while (true) {
             try {
-                String userInput = inputView.promptMembershipDiscount();
-                if (userInput.equalsIgnoreCase("Y")) {
-                    return true;
-                }
-                break;
+                return input.get();
             } catch (IllegalArgumentException e) {
                 outputView.printErrorMessage(e.getMessage());
             }
-
         }
-        return false;
     }
 
 }

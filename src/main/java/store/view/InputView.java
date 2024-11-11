@@ -27,10 +27,9 @@ public class InputView {
         return prompt;
     }
 
-    public String freeAlertInput(PurchaseAlert purchaseAlert) {
+    public void freeAlertInput(PurchaseAlert purchaseAlert) {
         System.out.printf(FREE_PRODUCT_INFO, purchaseAlert.getItemName(), purchaseAlert.getFreeQuantity());
         printMessage(BLANK);
-        return promptYesOrNo();
     }
 
     public String printInsufficientPromotionStockInfo(String productName, int remainingQuantity) {
@@ -39,23 +38,28 @@ public class InputView {
         return promptYesOrNo();
     }
 
-    public String promptMembershipDiscount(){
+    public void printMembershipMessage() {
         printMessage(MEMBERSHIP_DISCOUNT_MESSAGE);
-        return promptYesOrNo();
     }
 
 
-    public String purchaseInput() {
+    public void printPurchaseMessage() {
         printMessage(BLANK);
         printMessage(PURCHASE_MESSAGE);
+    }
+
+    public String purchaseInput() {
         String userInput = Console.readLine();
         return userInput;
     }
 
-    public String continueInput() {
+    public void printEndMessage() {
         printMessage(BLANK);
         printMessage(BLANK);
         printMessage(END_MESSAGE);
+    }
+
+    public String continueInput() {
         String prompt = Console.readLine();
         validatePrompt(prompt);
         return prompt;
