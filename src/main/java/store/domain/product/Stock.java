@@ -1,5 +1,8 @@
 package store.domain.product;
 
+import static store.exception.ErrorMessage.CURRENT_NOT_STOCK;
+import static store.exception.ErrorMessage.STOCK_NOT_UNDER_ZERO;
+
 public class Stock {
 
     private int normal;
@@ -45,13 +48,13 @@ public class Stock {
 
     public void validateInitQuantity(int normalQuantity, int promotionQuantity) {
         if (normalQuantity < 0 || promotionQuantity < 0) {
-            throw new IllegalArgumentException("[ERROR] 재고는 0 이하일 수 없습니다.");
+            throw new IllegalArgumentException(STOCK_NOT_UNDER_ZERO.getMessage());
         }
     }
 
     public void validateQuantity(int quantity, int currentStock) {
         if (currentStock - quantity < 0) {
-            throw new IllegalArgumentException("[ERROR] 현재 재고가 없습니다.");
+            throw new IllegalArgumentException(CURRENT_NOT_STOCK.getMessage());
         }
     }
 

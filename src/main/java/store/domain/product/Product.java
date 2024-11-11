@@ -1,6 +1,5 @@
 package store.domain.product;
 
-import camp.nextstep.edu.missionutils.DateTimes;
 import java.time.LocalDate;
 import store.domain.promotion.Promotion;
 import store.domain.product.dto.ProductDto;
@@ -85,6 +84,14 @@ public class Product {
             return;
         }
         stock.handlePromotionStock(quantity);
+    }
+
+    public void addNormalStock(int quantity) {
+        stock.addNormal(quantity);
+    }
+
+    public void addPromotionStock(int quantity) {
+        stock.addPromotion(quantity);
     }
 
     public boolean isPromotionDate(LocalDate currentDate) {

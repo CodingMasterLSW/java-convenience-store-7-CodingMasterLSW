@@ -15,7 +15,10 @@ public class InputParser {
 
     private static final String ITEM_DELIMITER = ",";
     private static final String PROPERTY_DELIMITER = "-";
+    private static final String ITEM_START_FORMAT = "[";
+    private static final String ITEM_END_FORMAT = "]";
     private static final Pattern NUMBER_PATTERN = Pattern.compile("\\d+");
+    private static final int ITEM_PROPERTY_SIZE = 2;
 
     private final Products products;
 
@@ -80,7 +83,7 @@ public class InputParser {
     }
 
     private void validateDelimiter(List<String> itemProperties) {
-        if (itemProperties.size() != 2) {
+        if (itemProperties.size() != ITEM_PROPERTY_SIZE) {
             throw new IllegalArgumentException(INVALID_INPUT.getMessage());
         }
     }
@@ -93,7 +96,7 @@ public class InputParser {
     }
 
     private void validateBracketsFormat(String item) {
-        if (item.startsWith("[") && item.endsWith("]")) {
+        if (item.startsWith(ITEM_START_FORMAT) && item.endsWith(ITEM_END_FORMAT)) {
             return;
         }
         throw new IllegalArgumentException(INVALID_INPUT.getMessage());

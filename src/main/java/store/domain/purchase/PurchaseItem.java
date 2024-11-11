@@ -3,7 +3,6 @@ package store.domain.purchase;
 import static store.exception.ErrorMessage.MINIMUM_PURCHASE_AMOUNT;
 
 import java.util.Objects;
-import store.domain.purchase.dto.PurchaseItemDto;
 
 public class PurchaseItem {
 

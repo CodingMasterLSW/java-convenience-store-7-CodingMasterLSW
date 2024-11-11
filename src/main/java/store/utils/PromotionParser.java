@@ -9,6 +9,8 @@ import store.domain.promotion.Promotion;
 
 public class PromotionParser {
 
+    private final String SPLIT_DELIMITER = ",";
+
     private PromotionParser() {
     }
 
@@ -26,7 +28,7 @@ public class PromotionParser {
     }
 
     private Promotion parseLineTopromotion(String line) {
-        List<String> split = List.of(line.split(","));
+        List<String> split = List.of(line.split(SPLIT_DELIMITER));
         String name = split.get(0);
         int buy = Integer.parseInt(split.get(1));
         int get = Integer.parseInt(split.get(2));

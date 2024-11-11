@@ -1,5 +1,7 @@
 package store.utils;
 
+import static store.exception.ErrorMessage.FILE_LOAD_EXCEPTION;
+
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
@@ -18,15 +20,19 @@ public class FileLoader {
     public static List<String> loadFile(String filePath) {
         List<String> lines = new ArrayList<>();
         try (BufferedReader br = new BufferedReader(new FileReader(filePath))) {
-            br.readLine(); // 헤더 라인 스킵
-            String line;
-            while ((line = br.readLine()) != null) {
-                lines.add(line);
-            }
+            readLinesFromFile(br, lines);
         } catch (IOException e) {
-            throw new IllegalArgumentException("[ERROR] 파일을 읽는 중 오류가 발생했습니다.", e);
+            throw new IllegalArgumentException(FILE_LOAD_EXCEPTION.getMessage());
         }
         return lines;
+    }
+
+    private static void readLinesFromFile(BufferedReader br, List<String> lines) throws IOException {
+        br.readLine(); // 헤더 라인 스킵
+        String line;
+        while ((line = br.readLine()) != null) {
+            lines.add(line);
+        }
     }
 
 }

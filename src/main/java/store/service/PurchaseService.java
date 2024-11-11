@@ -23,6 +23,12 @@ public class PurchaseService {
         this.products = products;
     }
 
+    private static void addAlertIfApplicable(List<PurchaseAlert> alerts, PurchaseAlert alert) {
+        if (alert.isApplicable()) {
+            alerts.add(alert);
+        }
+    }
+
     public List<PurchaseItem> initializePurchase(String userInput) {
         InputParser inputParser = InputParser.from(products);
         List<PurchaseItem> purchaseItems = inputParser.parseInputToItems(userInput);
@@ -30,7 +36,8 @@ public class PurchaseService {
         return purchaseItems;
     }
 
-    public PurchaseDto purchase(LocalDate currentDate, boolean isContinue, boolean isMembershipApplied) {
+    public PurchaseDto purchase(LocalDate currentDate, boolean isContinue,
+            boolean isMembershipApplied) {
         purchase.calculatePurchaseInfo(products, currentDate, isContinue);
         if (isMembershipApplied) {
             purchase.applyMembershipDiscount(products);
@@ -45,17 +52,19 @@ public class PurchaseService {
     public List<PurchaseAlert> generatePurchaseAlerts() {
         List<PurchaseAlert> alerts = new ArrayList<>();
         for (PurchaseItem item : purchase.getItems()) {
-            Product product = products.findProductByName(item.getName());
-            if (product.hasPromotion() && !product.lackOfPromotion(item.getQuantity())) {
-                int purchasedQuantity = item.getQuantity();
-                Promotion promotion = product.getPromotion();
-                PurchaseAlert alert = PurchaseAlert.of(product.getName(), promotion, purchasedQuantity);
-                if (alert.isApplicable()) {
-                    alerts.add(alert);
-                }
-            }
+            generateAlertForItem(item, alerts);
         }
         return alerts;
+    }
+
+    private void generateAlertForItem(PurchaseItem item, List<PurchaseAlert> alerts) {
+        Product product = products.findProductByName(item.getName());
+        if (product.hasPromotion() && !product.lackOfPromotion(item.getQuantity())) {
+            int purchasedQuantity = item.getQuantity();
+            Promotion promotion = product.getPromotion();
+            PurchaseAlert alert = PurchaseAlert.of(product.getName(), promotion, purchasedQuantity);
+            addAlertIfApplicable(alerts, alert);
+        }
     }
 
     public void applyGiftIfApplicable(PurchaseAlert alert) {
@@ -75,12 +84,12 @@ public class PurchaseService {
     public List<ProductDto> getProductDtos() {
         List<ProductDto> productDtos = new ArrayList<>();
         for (Product product : products.getProducts()) {
-            extracted(product, productDtos);
+            addAlertIfApplicable(product, productDtos);
         }
         return productDtos;
     }
 
-    private void extracted(Product product, List<ProductDto> productDtos) {
+    private void addAlertIfApplicable(Product product, List<ProductDto> productDtos) {
         if (product.getName() != null && product.getPromotion() != null) {
             productDtos.add(product.toPromotionDto());
         }

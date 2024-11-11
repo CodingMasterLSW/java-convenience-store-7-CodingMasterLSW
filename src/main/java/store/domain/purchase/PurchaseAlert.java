@@ -1,7 +1,6 @@
 package store.domain.purchase;
 
 import store.domain.promotion.Promotion;
-import store.domain.purchase.dto.PurchaseAlertDto;
 
 public class PurchaseAlert {
 
