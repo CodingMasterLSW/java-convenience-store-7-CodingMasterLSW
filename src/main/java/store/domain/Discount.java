@@ -30,7 +30,4 @@ public class Discount {
         return membership.apply(amount);
     }
 
-    public int getTotalAmount() {
-        return promotionAmount + membership.getCurrentDiscount();
-    }
 }

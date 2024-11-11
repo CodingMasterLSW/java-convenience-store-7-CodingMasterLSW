@@ -28,10 +28,6 @@ public class PurchaseItem {
         }
     }
 
-    public PurchaseItemDto toDto(String name, int quantity, int price) {
-        return PurchaseItemDto.of(name, quantity, price);
-    }
-
     public void addQuantity(int quantity) {
         this.quantity += quantity;
     }

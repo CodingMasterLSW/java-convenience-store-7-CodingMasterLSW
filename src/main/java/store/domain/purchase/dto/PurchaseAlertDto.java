@@ -14,11 +14,4 @@ public class PurchaseAlertDto {
         return new PurchaseAlertDto(productName, freeQuantity);
     }
 
-    public String getProductName() {
-        return productName;
-    }
-
-    public int getFreeQuantity() {
-        return freeQuantity;
-    }
 }

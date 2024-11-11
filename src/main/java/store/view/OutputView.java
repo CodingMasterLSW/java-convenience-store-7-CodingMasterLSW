@@ -2,9 +2,6 @@ package store.view;
 
 import java.util.List;
 import store.domain.product.dto.ProductDto;
-import store.domain.purchase.PurchaseAlert;
-import store.domain.purchase.PurchaseGift;
-import store.domain.purchase.PurchaseGifts;
 import store.domain.purchase.dto.PurchaseDto;
 import store.domain.purchase.dto.PurchaseGiftDto;
 import store.domain.purchase.dto.PurchaseItemDto;
@@ -80,14 +77,6 @@ public class OutputView {
         String promotion = getPromotion(productDto);
         System.out.printf(PRODUCT_INFO, name, price, quantity, promotion);
         System.out.println();
-    }
-
-    public void printFreeItemInfo(PurchaseAlert purchaseAlert) {
-        if (purchaseAlert.isApplicable()) {
-            System.out.printf(FREE_ITEM_PROMPT_MESSAGE, purchaseAlert.getItemName(),
-                    purchaseAlert.getFreeQuantity());
-            printMessage(BLANK);
-        }
     }
 
     public void printPurchaseInfo(List<PurchaseItemDto> purchaseItemDtos) {

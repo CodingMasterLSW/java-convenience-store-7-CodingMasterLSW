@@ -86,7 +86,6 @@ public class Purchase {
 
     private void adjustPurchaseItemQuantity(PurchaseItem item, int requestedQuantity,
             int nonPromotionQuantity) {
-        // 실제 사용자가 얻을 수 있는 프로모션 재고 수량
         int promotionApplicableQuantity = requestedQuantity - nonPromotionQuantity;
         item.setQuantity(promotionApplicableQuantity);
     }
@@ -195,44 +194,10 @@ public class Purchase {
         );
     }
 
-    public Discount getDiscount() {
-        return discount;
-    }
-
-    private void decreaseStock(LocalDate localDate, boolean isContinue, Product product,
-            int purchaseQuantity) {
-        if (product.hasPromotion() && product.isPromotionDate(localDate)) {
-            product.notEnoughPromotionProduct(purchaseQuantity, isContinue);
-            return;
-        }
-        product.purchaseNormalProduct(purchaseQuantity);
-    }
-
     private void validatePurchaseQuantity(int purchaseQuantity, int totalStock) {
         if (purchaseQuantity > totalStock) {
             throw new IllegalArgumentException(OVER_STOCK_PURCHASE.getMessage());
         }
-    }
-
-    private int calculateFreeItems(int quantity, Promotion promotion) {
-        int requiredBuyQuantity = promotion.getBuy();
-        int freeQuantity = promotion.getGet();
-
-        // 구매 수량을 기준으로 프로모션 혜택 수량 계산
-        int applicableTimes = quantity / (requiredBuyQuantity + freeQuantity);
-        return applicableTimes * freeQuantity;
-    }
-
-    public int getTotalPrice() {
-        return totalPrice;
-    }
-
-    public PurchaseGifts getPurchaseGifts() {
-        return purchaseGifts;
-    }
-
-    public void addPromotionDiscount(int price) {
-        discount.addPromotionAmount(price);
     }
 
 }

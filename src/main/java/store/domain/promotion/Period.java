@@ -20,12 +20,4 @@ public class Period {
         return !localDate.isAfter(endDate) && !localDate.isBefore(startDate);
     }
 
-    public LocalDate getStartDate() {
-        return startDate;
-    }
-
-    public LocalDate getEndDate() {
-        return endDate;
-    }
-
 }

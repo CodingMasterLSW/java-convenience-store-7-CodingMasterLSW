@@ -34,16 +34,19 @@ public class StoreController {
             showCurrentProduct();
             purchaseItems();
             processPurchaseAlerts();
-
             boolean isEnoughStock = checkAndPromptPromotionStock();
             boolean isMembershipApplied = handleMembershipInput();
-            PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(),
-                    isEnoughStock, isMembershipApplied);
-            displayPurchaseResult(purchaseDto);
+            displayReceipt(isEnoughStock, isMembershipApplied);
             if (isEnd()) {
                 break;
             }
         }
+    }
+
+    private void displayReceipt(boolean isEnoughStock, boolean isMembershipApplied) {
+        PurchaseDto purchaseDto = purchaseService.purchase(DateTimes.now().toLocalDate(),
+                isEnoughStock, isMembershipApplied);
+        displayPurchaseResult(purchaseDto);
     }
 
     private void showCurrentProduct() {

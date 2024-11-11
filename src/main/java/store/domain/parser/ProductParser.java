@@ -34,16 +34,12 @@ public class ProductParser {
 
         Product existingProduct = productMap.get(name);
         if (existingProduct != null) {
-            // 이미 존재하는 제품인 경우 재고만 추가
             addStockToExistingProduct(existingProduct, price, quantity, promotionName, promotions);
             return existingProduct;
         }
-
-        // 새로운 제품인 경우
         if (isNullOrEmpty(promotionName)) {
             return Product.ofNormal(name, price, quantity);
         }
-
         Promotion promotion = getPromotion(promotionName, promotions);
         return Product.ofPromotion(name, price, quantity, promotion);
     }
@@ -51,12 +47,11 @@ public class ProductParser {
     private void addStockToExistingProduct(Product product, int price, int quantity, String promotionName, Map<String, Promotion> promotions) {
         validatePriceConsistency(product, price);
         if (isNullOrEmpty(promotionName)) {
-            product.getStock().addNormal(quantity); // Stock에 직접 재고 추가
+            product.getStock().addNormal(quantity);
         } else {
-            product.getStock().addPromotion(quantity); // Stock에 프로모션 재고 추가
+            product.getStock().addPromotion(quantity);
         }
     }
-
 
     private void validatePriceConsistency(Product product, int price) {
         if (product.getPrice() != price) {

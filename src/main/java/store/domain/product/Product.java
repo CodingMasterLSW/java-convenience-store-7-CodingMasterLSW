@@ -66,7 +66,7 @@ public class Product {
 
     public int getNonPromotionQuantity(int purchaseQuantity) {
         if (!hasPromotion() || !stock.hasPromotionStock()) {
-            return purchaseQuantity; // 프로모션이 없거나 프로모션 재고가 없으면 전체 수량이 비프로모션
+            return purchaseQuantity;
         }
         return calculateLackPromotionStock(purchaseQuantity);
     }
@@ -75,51 +75,8 @@ public class Product {
         stock.decreasePromotion(quantity);
     }
 
-    public void notEnoughPromotionProduct(int quantity, boolean continuePurchase) {
-        if (stock.lackOfPromotionStock(quantity)) {
-            handleInsufficientPromotionStock(quantity, continuePurchase);
-        }
-    }
-
-    private void handleInsufficientPromotionStock(int quantity, boolean continuePurchase) {
-        if (continuePurchase) {
-            stock.handlePromotionStock(quantity);
-            return;
-        }
-        stock.decreasePromotion(stock.getPromotion());
-    }
-
     public void purchaseNormalProduct(int quantity) {
         stock.decreaseNormal(quantity);
-    }
-
-    public void purchasePromotionProduct(int quantity) {
-        stock.decreasePromotion(quantity);
-    }
-
-
-
-    public boolean checkAndBuyWithPromotion(int quantity, boolean useNormalStockIfNeeded) {
-        if (promotion == null || !promotion.isDate(DateTimes.now().toLocalDate())) {
-            stock.decreaseNormal(quantity);
-            return true;
-        }
-
-        int availablePromotionStock = stock.getPromotion();
-
-        int promotionStockToDeduct = Math.min(quantity, availablePromotionStock);
-        stock.decreasePromotion(promotionStockToDeduct);
-
-        int normalStockToDeduct = quantity - promotionStockToDeduct;
-        if (normalStockToDeduct > 0) {
-            if (useNormalStockIfNeeded) {
-                stock.decreaseNormal(normalStockToDeduct);
-            } else {
-                // 구매하지 않기로 선택한 경우
-                return false;
-            }
-        }
-        return true;
     }
 
     public void buy(int quantity, LocalDate localDate) {

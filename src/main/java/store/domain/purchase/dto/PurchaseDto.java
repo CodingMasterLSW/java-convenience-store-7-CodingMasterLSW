@@ -3,13 +3,13 @@ package store.domain.purchase.dto;
 import java.util.List;
 
 public class PurchaseDto {
-    private List<PurchaseItemDto> items;  // 구매한 상품 리스트
-    private List<PurchaseGiftDto> gifts;  // 증정품 리스트
-    private int totalPrice;               // 총 구매액
-    private int totalQuantity;            // 총 구매 수량
-    private int promotionDiscount;        // 행사 할인 금액
-    private int membershipDiscount;       // 멤버십 할인 금액
-    private int finalAmount;              // 내실 돈 (최종 결제 금액)
+    private List<PurchaseItemDto> items;
+    private List<PurchaseGiftDto> gifts;
+    private int totalPrice;
+    private int totalQuantity;
+    private int promotionDiscount;
+    private int membershipDiscount;
+    private int finalAmount;
 
     public PurchaseDto(List<PurchaseItemDto> items, List<PurchaseGiftDto> gifts, int totalPrice, int totalQuantity, int promotionDiscount, int membershipDiscount, int finalAmount) {
         this.items = items;
@@ -21,7 +21,6 @@ public class PurchaseDto {
         this.finalAmount = finalAmount;
     }
 
-    // Getters
     public List<PurchaseItemDto> getItems() {
         return items;
     }

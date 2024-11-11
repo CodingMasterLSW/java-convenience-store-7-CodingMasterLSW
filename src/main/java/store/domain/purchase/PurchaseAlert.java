@@ -35,8 +35,4 @@ public class PurchaseAlert {
         return freeQuantity;
     }
 
-    public PurchaseAlertDto toDto() {
-        return PurchaseAlertDto.from(itemName, freeQuantity);
-    }
-
 }

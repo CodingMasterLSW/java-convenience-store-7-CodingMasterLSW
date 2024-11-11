@@ -36,7 +36,4 @@ public class Promotion {
         return get;
     }
 
-    public Period getPeriod() {
-        return period;
-    }
 }

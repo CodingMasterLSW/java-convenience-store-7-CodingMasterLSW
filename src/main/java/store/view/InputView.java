@@ -42,7 +42,6 @@ public class InputView {
         printMessage(MEMBERSHIP_DISCOUNT_MESSAGE);
     }
 
-
     public void printPurchaseMessage() {
         printMessage(BLANK);
         printMessage(PURCHASE_MESSAGE);

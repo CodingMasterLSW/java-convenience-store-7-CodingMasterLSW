@@ -23,7 +23,6 @@ public class PurchaseService {
         this.products = products;
     }
 
-    // 상품을 입력받고 구매목록으로 바꿔서 출력한다.
     public List<PurchaseItem> initializePurchase(String userInput) {
         InputParser inputParser = InputParser.from(products);
         List<PurchaseItem> purchaseItems = inputParser.parseInputToItems(userInput);
@@ -60,7 +59,6 @@ public class PurchaseService {
     }
 
     public void applyGiftIfApplicable(PurchaseAlert alert) {
-        // 증정 조건이 충족되면 PurchaseItem에 증정 수량 추가
         PurchaseItem item = findItemByName(alert.getItemName());
         if (item != null) {
             item.addQuantity(alert.getFreeQuantity());
@@ -71,7 +69,7 @@ public class PurchaseService {
         return purchase.getItems().stream()
                 .filter(item -> item.getName().equals(itemName))
                 .findFirst()
-                .orElse(null); // 찾지 못한 경우 null 반환 (필요에 따라 예외 처리 가능)
+                .orElse(null);
     }
 
     public List<ProductDto> getProductDtos() {
