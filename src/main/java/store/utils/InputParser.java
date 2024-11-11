@@ -2,10 +2,12 @@ package store.utils;
 
 import static store.exception.ErrorMessage.INVALID_INPUT;
 import static store.exception.ErrorMessage.NOT_EXIST_PRODUCT;
+import static store.exception.ErrorMessage.OVER_STOCK_PURCHASE;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.regex.Pattern;
+import store.domain.product.Product;
 import store.domain.purchase.PurchaseItem;
 import store.domain.product.Products;
 
@@ -41,10 +43,12 @@ public class InputParser {
     private PurchaseItem parseItem(String item) {
         String substring = removeBracket(item);
         List<String> itemProperties = splitProperties(substring);
-
         String name = extractProductName(itemProperties);
         int quantity = extractQuantity(itemProperties);
-
+        Product product = products.findProductByName(name);
+        if (product.hasLackOfStock(quantity)) {
+            throw new IllegalArgumentException(OVER_STOCK_PURCHASE.getMessage());
+        }
         return PurchaseItem.of(name, quantity);
     }
 

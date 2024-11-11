@@ -174,5 +174,9 @@ public class Product {
     public int getPromotionStock() {
         return stock.getPromotion();
     }
+
+    public boolean hasLackOfStock(int quantity) {
+        return stock.getTotal() < quantity;
+    }
 }
 
