@@ -2,8 +2,8 @@ package store.config;
 
 import java.util.List;
 import java.util.Map;
-import store.domain.parser.ProductParser;
-import store.domain.parser.PromotionParser;
+import store.utils.ProductParser;
+import store.utils.PromotionParser;
 import store.domain.product.Products;
 import store.domain.promotion.Promotion;
 import store.utils.FileLoader;

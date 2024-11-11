@@ -1,4 +1,4 @@
-package store.domain.parser;
+package store.utils;
 
 import java.util.ArrayList;
 import java.util.HashMap;

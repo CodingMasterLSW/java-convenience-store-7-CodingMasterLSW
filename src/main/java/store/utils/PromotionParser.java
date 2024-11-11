@@ -1,4 +1,4 @@
-package store.domain.parser;
+package store.utils;
 
 import java.time.LocalDate;
 import java.util.HashMap;

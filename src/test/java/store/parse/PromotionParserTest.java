@@ -5,7 +5,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 import java.util.List;
 import java.util.Map;
 import org.junit.jupiter.api.Test;
-import store.domain.parser.PromotionParser;
+import store.utils.PromotionParser;
 import store.domain.promotion.Promotion;
 
 public class PromotionParserTest {

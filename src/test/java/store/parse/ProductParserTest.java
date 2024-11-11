@@ -9,7 +9,7 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import store.domain.parser.ProductParser;
+import store.utils.ProductParser;
 import store.domain.product.Product;
 import store.domain.promotion.Period;
 import store.domain.promotion.Promotion;

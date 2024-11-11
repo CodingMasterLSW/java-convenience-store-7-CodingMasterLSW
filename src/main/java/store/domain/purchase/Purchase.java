@@ -7,7 +7,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
-import store.domain.Discount;
+import store.domain.discount.Discount;
 import store.domain.product.Product;
 import store.domain.product.Products;
 import store.domain.promotion.Promotion;
